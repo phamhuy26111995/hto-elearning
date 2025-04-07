@@ -5,5 +5,13 @@ import (
 )
 
 func RegisterRoutes(server *gin.Engine) {
-	server.GET("/test", getTest)
+
+	public := server.Group("/")
+
+	public.GET("", func(c *gin.Context) {})
+
+	authenticated := server.Group("/api")
+
+	registerUserRoutes(authenticated)
+
 }
