@@ -4,14 +4,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterRoutes(server *gin.Engine) {
+func RegisterRoutes() *gin.Engine {
 
-	public := server.Group("/")
+	server := gin.Default()
 
-	public.GET("", func(c *gin.Context) {})
+	userController := registerUserController()
 
-	authenticated := server.Group("/api")
+	server.GET("/users", userController.GetUsers)
+	server.POST("/users/create", userController.CreateUser)
+	server.PUT("/users/update", userController.UpdateUser)
+	server.GET("/users/:id", userController.GetUserById)
 
-	registerUserRoutes(authenticated)
-
+	return server
 }

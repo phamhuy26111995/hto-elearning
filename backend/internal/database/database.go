@@ -38,13 +38,6 @@ func ConnectDB() error {
 	return nil
 }
 
-//func CloseDB() {
-//	if DB != nil {
-//		DB.Close()
-//		log.Println("Closed database connection")
-//	}
-//}
-
 func InitDB() {
 	err := ConnectDB()
 	if err != nil {
@@ -56,4 +49,5 @@ func InitDB() {
 
 func createTables() {
 	createUsersTable()
+	createCoursesTable()
 }
