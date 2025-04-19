@@ -50,4 +50,5 @@ func InitDB() {
 func createTables() {
 	createUsersTable()
 	createCoursesTable()
+	createModulesTable()
 }

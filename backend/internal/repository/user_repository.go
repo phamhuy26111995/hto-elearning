@@ -11,11 +11,62 @@ import (
 type UserRepository interface {
 	GetAll() ([]model.User, error)
 	CreateUser(user *model.User) error
+
+	CreateStudent(student *model.User, teacherId int64) error
+
 	GetUserById(userId int64) (*model.User, error)
 	UpdateUser(user *model.User) error
+
+	GetUserByUsernameToVal(username string) (*model.User, error)
+
+	GetAllByTeacherId(teacherId int64) ([]model.User, error)
 }
 
 type userRepositoryImpl struct {
+}
+
+func (u *userRepositoryImpl) CreateStudent(student *model.User, teacherId int64) error {
+	query := `INSERT INTO users (username,email, password, created_by,updated_by,teacher_id) 
+			VALUES ($1, $2, $3, $4, $5, $6)`
+	stmt, err := database.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(student.Username, student.Email, student.Password, teacherId, teacherId, teacherId)
+	return err
+}
+
+func (u *userRepositoryImpl) GetAllByTeacherId(teacherId int64) ([]model.User, error) {
+	query := `SELECT user_id, username, email, role, created_at, updated_at FROM users WHERE teacher_id = $1`
+	rows, err := database.DB.Query(query, teacherId)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var users []model.User
+	for rows.Next() {
+		var user model.User
+		err := rows.Scan(&user.UserID, &user.Username, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+	return users, nil
+}
+
+func (u *userRepositoryImpl) GetUserByUsernameToVal(username string) (*model.User, error) {
+	var user model.User
+	query := `SELECT user_id,username,password, role  FROM users WHERE username = $1`
+	err := database.DB.QueryRow(query, username).Scan(&user.UserID, &user.Username, &user.Password, &user.Role)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func (u *userRepositoryImpl) UpdateUser(user *model.User) error {
