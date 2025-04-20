@@ -62,3 +62,25 @@ func (controller *ModuleController) CreateModules(context *gin.Context) {
 
 	context.JSON(http.StatusCreated, gin.H{"Success": "Modules created successfully"})
 }
+
+func (controller *ModuleController) UpdateModules(context *gin.Context) {
+	var modules []*model.Module
+	if err := context.ShouldBindJSON(&modules); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if modules == nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Modules cannot be empty"})
+		return
+	}
+
+	err := controller.moduleService.UpdateModules(modules)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{"Success": "Modules updated successfully"})
+}

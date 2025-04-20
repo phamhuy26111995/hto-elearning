@@ -31,6 +31,7 @@ func RegisterRoutes() *gin.Engine {
 
 	authenticated.GET("/modules", moduleController.GetAllModulesByCourse)
 	authenticated.POST("/modules/create", moduleController.CreateModules)
+	authenticated.PUT("/modules/update", moduleController.UpdateModules)
 
 	server.POST("/login", userController.Login)
 

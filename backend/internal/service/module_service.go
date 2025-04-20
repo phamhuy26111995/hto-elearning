@@ -10,10 +10,16 @@ type ModuleService interface {
 	GetAllModulesByCourse(courseId int64) ([]*dto.ModuleDTO, error)
 
 	CreateModules(modules []*model.Module, courseId int64) error
+
+	UpdateModules(modules []*model.Module) error
 }
 
 type moduleServiceImpl struct {
 	repo repository.ModuleRepository
+}
+
+func (service *moduleServiceImpl) UpdateModules(modules []*model.Module) error {
+	return service.repo.UpdateModules(modules)
 }
 
 func (service *moduleServiceImpl) CreateModules(modules []*model.Module, courseId int64) error {
