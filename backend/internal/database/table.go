@@ -36,6 +36,24 @@ func createModulesTable() {
 	}
 }
 
+func createLessonsTable() {
+	query := `
+		CREATE TABLE IF NOT EXISTS lessons  (
+		  lesson_id SERIAL PRIMARY KEY,
+		  module_id INTEGER NOT NULL,             
+		  title VARCHAR(255) NOT NULL,
+		  content TEXT,
+		  video_url VARCHAR(255),
+		  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+				);
+	`
+	_, err := DB.Exec(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 func createCoursesTable() {
 	query := `
 		CREATE TABLE IF NOT EXISTS courses (

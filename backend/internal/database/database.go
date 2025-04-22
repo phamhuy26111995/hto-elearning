@@ -51,4 +51,5 @@ func createTables() {
 	createUsersTable()
 	createCoursesTable()
 	createModulesTable()
+	createLessonsTable()
 }
