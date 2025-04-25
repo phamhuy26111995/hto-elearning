@@ -70,3 +70,19 @@ func createCoursesTable() {
 		log.Fatal(err)
 	}
 }
+
+func createQuizzesTable() {
+	query := `
+		CREATE TABLE IF NOT EXISTS quizzes   (
+  			quiz_id SERIAL PRIMARY KEY,
+  			module_id INTEGER, 
+  			course_id INTEGER NOT NULL,    -- tham chiếu đến courses.course_id
+ 		 title VARCHAR(255) NOT NULL,
+  		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+				);
+	`
+	_, err := DB.Exec(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+}

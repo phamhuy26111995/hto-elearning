@@ -52,4 +52,5 @@ func createTables() {
 	createCoursesTable()
 	createModulesTable()
 	createLessonsTable()
+	createQuizzesTable()
 }
