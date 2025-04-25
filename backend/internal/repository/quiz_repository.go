@@ -1,4 +1,107 @@
 package repository
 
+import (
+	"github.com/phamhuy26111995/hto-elearning/internal/database"
+	"github.com/phamhuy26111995/hto-elearning/internal/model"
+)
+
 type QuizRepository interface {
+	GetAllQuizzesByModuleId(moduleId int64) ([]model.Quiz, error)
+
+	CreateQuizzes(quizzes []model.Quiz, moduleId int64) error
+
+	UpdateQuizzes(quizzes []model.Quiz) error
+}
+
+type quizRepositoryImpl struct {
+}
+
+func NewQuizRepository() QuizRepository {
+	return &quizRepositoryImpl{}
+}
+
+func (q *quizRepositoryImpl) GetAllQuizzesByModuleId(moduleId int64) ([]model.Quiz, error) {
+	query := `SELECT quiz_id, title FROM quizzes WHERE module_id = $1`
+
+	rows, err := database.DB.Query(query, moduleId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var quizzes []model.Quiz
+	for rows.Next() {
+		var quiz model.Quiz
+		err := rows.Scan(&quiz.QuizId, &quiz.ModuleId, &quiz.Title, &quiz.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		quizzes = append(quizzes, quiz)
+	}
+
+	return quizzes, nil
+}
+
+func (q *quizRepositoryImpl) CreateQuizzes(quizzes []model.Quiz, moduleId int64) error {
+	if len(quizzes) == 0 {
+		return nil
+	}
+
+	tx, err := database.DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+	}()
+
+	for _, quiz := range quizzes {
+		query := `INSERT INTO quizzes (module_id, title) VALUES ($1, $2)`
+		_, err := tx.Exec(query, moduleId, quiz.Title)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (q *quizRepositoryImpl) UpdateQuizzes(quizzes []model.Quiz) error {
+	if len(quizzes) == 0 {
+		return nil
+	}
+
+	tx, err := database.DB.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+	}()
+
+	for _, quiz := range quizzes {
+		query := `UPDATE quizzes SET title = $1 WHERE quiz_id = $2`
+		_, err := tx.Exec(query, quiz.Title, quiz.QuizId)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

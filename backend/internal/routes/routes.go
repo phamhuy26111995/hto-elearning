@@ -12,6 +12,7 @@ func RegisterRoutes() *gin.Engine {
 	userController := registerUserController()
 	courseController := registerCourseController()
 	moduleController := registerModuleController()
+	quizController := registerQuizController()
 
 	authenticated := server.Group("/api/v1/teacher")
 
@@ -32,6 +33,10 @@ func RegisterRoutes() *gin.Engine {
 	authenticated.GET("/modules", moduleController.GetAllModulesByCourse)
 	authenticated.POST("/modules/create", moduleController.CreateModules)
 	authenticated.PUT("/modules/update", moduleController.UpdateModules)
+
+	authenticated.GET("/quizzes", quizController)
+	authenticated.POST("/quizzes/create")
+	authenticated.PUT("/quizzes/update")
 
 	server.POST("/login", userController.Login)
 
