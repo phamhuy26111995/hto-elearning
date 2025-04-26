@@ -53,4 +53,6 @@ func createTables() {
 	createModulesTable()
 	createLessonsTable()
 	createQuizzesTable()
+	createQuizQuestionsTable()
+	createQuizOptionsTable()
 }

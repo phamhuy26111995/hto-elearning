@@ -43,6 +43,7 @@ func createLessonsTable() {
 		  module_id INTEGER NOT NULL,             
 		  title VARCHAR(255) NOT NULL,
 		  content TEXT,
+		  order_index INTEGER DEFAULT 1,
 		  video_url VARCHAR(255),
 		  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -79,6 +80,36 @@ func createQuizzesTable() {
   			course_id INTEGER NOT NULL,    -- tham chiếu đến courses.course_id
  		 title VARCHAR(255) NOT NULL,
   		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+				);
+	`
+	_, err := DB.Exec(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func createQuizQuestionsTable() {
+	query := `
+		CREATE TABLE IF NOT EXISTS quiz_questions   (
+  			question_id  SERIAL PRIMARY KEY,
+  			quiz_id INTEGER NOT NULL, 
+  			question_content TEXT NOT NULL,    -- tham chiếu đến courses.course_id
+ 		 question_type VARCHAR(50) DEFAULT 'ONE_CHOICE'
+				);
+	`
+	_, err := DB.Exec(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func createQuizOptionsTable() {
+	query := `
+		CREATE TABLE IF NOT EXISTS quiz_options   (
+  			option_id  SERIAL PRIMARY KEY,
+  			question_id INTEGER NOT NULL, 
+  			option_text TEXT NOT NULL,    -- tham chiếu đến courses.course_id
+ 		 is_correct BOOLEAN DEFAULT false
 				);
 	`
 	_, err := DB.Exec(query)

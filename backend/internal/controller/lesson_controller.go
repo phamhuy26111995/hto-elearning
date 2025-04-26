@@ -18,39 +18,64 @@ func NewLessonController(lessonService service.LessonService) LessonController {
 	}
 }
 
-func (l LessonController) GetLessonsByModuleId(context *gin.Context) ([]model.Lessons, error) {
+func (l LessonController) GetLessonsByModuleId(context *gin.Context) {
 
 	moduleId, _ := context.Params.Get("moduleId")
 	moduleIdInt, _ := strconv.ParseInt(moduleId, 10, 64)
 
-	return l.lessonService.GetLessonsByModuleId(moduleIdInt)
+	lessons, err := l.lessonService.GetLessonsByModuleId(moduleIdInt)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, lessons)
 }
 
-func (l LessonController) CreateLessons(context *gin.Context) error {
+func (l LessonController) CreateLessons(context *gin.Context) {
 
 	var lessons []model.Lessons
 	if err := context.ShouldBindJSON(&lessons); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return err
+		return
 	}
 
 	if len(lessons) == 0 {
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Lessons cannot be empty"})
-		return nil
+		return
 	}
 
 	moduleId := lessons[0].ModuleId
 
-	return l.lessonService.CreateLessons(lessons, moduleId)
+	err := l.lessonService.CreateLessons(lessons, moduleId)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{"Success": "Lessons created successfully"})
+
 }
 
-func (l LessonController) UpdateLessons(context *gin.Context) error {
+func (l LessonController) UpdateLessons(context *gin.Context) {
 
 	var lessons []model.Lessons
 	if err := context.ShouldBindJSON(&lessons); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return err
+		return
 	}
 
-	return l.lessonService.UpdateLessons(lessons)
+	if len(lessons) == 0 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Lessons cannot be empty"})
+		return
+	}
+
+	err := l.lessonService.UpdateLessons(lessons)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{"Success": "Lessons updated successfully"})
+
 }

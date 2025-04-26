@@ -12,7 +12,10 @@ func RegisterRoutes() *gin.Engine {
 	userController := registerUserController()
 	courseController := registerCourseController()
 	moduleController := registerModuleController()
+	lessonController := registerLessonController()
 	quizController := registerQuizController()
+	quizQuestionController := registerQuizQuestionController()
+	quizOptionController := registerQuizOptionController()
 
 	authenticated := server.Group("/api/v1/teacher")
 
@@ -34,9 +37,21 @@ func RegisterRoutes() *gin.Engine {
 	authenticated.POST("/modules/create", moduleController.CreateModules)
 	authenticated.PUT("/modules/update", moduleController.UpdateModules)
 
-	authenticated.GET("/quizzes", quizController)
-	authenticated.POST("/quizzes/create")
-	authenticated.PUT("/quizzes/update")
+	authenticated.GET("/lessons", lessonController.GetLessonsByModuleId)
+	authenticated.POST("/lessons/create", lessonController.CreateLessons)
+	authenticated.PUT("/lessons/update", lessonController.UpdateLessons)
+
+	authenticated.GET("/quizzes", quizController.GetQuizzesByModuleId)
+	authenticated.POST("/quizzes/create", quizController.CreateQuizzes)
+	authenticated.PUT("/quizzes/update", quizController.UpdateQuizzes)
+
+	authenticated.GET("/quiz-questions", quizQuestionController.GetAllQuestionsByQuizId)
+	authenticated.POST("/quiz-questions/create", quizQuestionController.CreateQuestions)
+	authenticated.PUT("/quiz-questions/update", quizQuestionController.UpdateQuestions)
+
+	authenticated.GET("/quiz-options", quizOptionController.GetAllQuizOptionsByQuestionId)
+	authenticated.POST("/quiz-options/create", quizOptionController.CreateQuizOptions)
+	authenticated.PUT("/quiz-options/update", quizOptionController.UpdateQuizOptions)
 
 	server.POST("/login", userController.Login)
 

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/phamhuy26111995/hto-elearning/internal/model"
 	"github.com/phamhuy26111995/hto-elearning/internal/service"
+	"net/http"
 	"strconv"
 )
 
@@ -85,8 +86,8 @@ func (c *CourseController) DeleteCourse(ctx *gin.Context) {
 	}
 	err := c.courseService.DeleteCourse(id)
 	if err != nil {
-		ctx.JSON(500, err)
+		ctx.JSON(http.StatusInternalServerError, err)
 		return
 	}
-	ctx.JSON(200, nil)
+	ctx.JSON(http.StatusOK, nil)
 }

@@ -18,7 +18,7 @@ func NewQuizController(quizService service.QuizService) *QuizController {
 	}
 }
 
-func (q *QuizController) GetQuizzesByModuleId(context *gin.Context) ([]model.Quiz, error) {
+func (q *QuizController) GetQuizzesByModuleId(context *gin.Context) {
 	moduleIdStr := context.Param("moduleId")
 
 	moduleId, err := strconv.ParseInt(moduleIdStr, 10, 64)
@@ -27,5 +27,53 @@ func (q *QuizController) GetQuizzesByModuleId(context *gin.Context) ([]model.Qui
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid module ID"})
 	}
 
-	return q.quizService.GetAllQuizzesByModuleId(moduleId)
+	quizzes, err := q.quizService.GetAllQuizzesByModuleId(moduleId)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve quizzes"})
+	}
+
+	context.JSON(http.StatusOK, quizzes)
+}
+
+func (q *QuizController) CreateQuizzes(context *gin.Context) {
+	var quizzes []model.Quiz
+	if err := context.ShouldBindJSON(&quizzes); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(quizzes) == 0 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Quizzes cannot be empty"})
+		return
+	}
+
+	err := q.quizService.CreateQuizzes(quizzes)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create quizzes"})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{"Success": "Quizzes created successfully"})
+}
+
+func (q *QuizController) UpdateQuizzes(context *gin.Context) {
+	var quizzes []model.Quiz
+	if err := context.ShouldBindJSON(&quizzes); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(quizzes) == 0 {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Quizzes cannot be empty"})
+		return
+	}
+
+	err := q.quizService.UpdateQuizzes(quizzes)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update quizzes"})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{"Success": "Quizzes updated successfully"})
 }
