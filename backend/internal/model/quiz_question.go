@@ -5,4 +5,5 @@ type QuizQuestion struct {
 	QuizId          int64  `json:"quizId"`
 	QuestionContent string `json:"questionContent"`
 	QuestionType    string `json:"questionType"`
+	OrderIndex      int    `json:"orderIndex"`
 }
