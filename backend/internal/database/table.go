@@ -79,6 +79,7 @@ func createQuizzesTable() {
   			module_id INTEGER, 
   			course_id INTEGER NOT NULL,    -- tham chiếu đến courses.course_id
  		 title VARCHAR(255) NOT NULL,
+		order_index INTEGER DEFAULT 1,
   		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 				);
 	`
@@ -94,6 +95,7 @@ func createQuizQuestionsTable() {
   			question_id  SERIAL PRIMARY KEY,
   			quiz_id INTEGER NOT NULL, 
   			question_content TEXT NOT NULL,    -- tham chiếu đến courses.course_id
+  			order_index INTEGER DEFAULT 1,
  		 question_type VARCHAR(50) DEFAULT 'ONE_CHOICE'
 				);
 	`
@@ -108,7 +110,8 @@ func createQuizOptionsTable() {
 		CREATE TABLE IF NOT EXISTS quiz_options   (
   			option_id  SERIAL PRIMARY KEY,
   			question_id INTEGER NOT NULL, 
-  			option_text TEXT NOT NULL,    -- tham chiếu đến courses.course_id
+  			option_text TEXT NOT NULL,    
+ 		 order_index INTEGER DEFAULT 1,
  		 is_correct BOOLEAN DEFAULT false
 				);
 	`
