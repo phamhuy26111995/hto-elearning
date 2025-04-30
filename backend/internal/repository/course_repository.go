@@ -26,7 +26,7 @@ func NewCourseRepository() CourseRepository {
 
 func (c *courseRepositoryImpl) GetAllCoursesByUserId(userId int64) ([]model.Course, error) {
 	query := `
-	SELECT course_id, title, description FROM courses WHERE teacher_id = $1
+	SELECT course_id, title, description FROM elearning.courses WHERE teacher_id = $1
 `
 	rows, err := database.DB.Query(query, userId)
 	if err != nil {
@@ -48,7 +48,7 @@ func (c *courseRepositoryImpl) GetAllCoursesByUserId(userId int64) ([]model.Cour
 }
 
 func (c *courseRepositoryImpl) CreateCourse(course *model.Course, userId int64) error {
-	query := `INSERT INTO courses (title, description, teacher_id, created_by, updated_by) 
+	query := `INSERT INTO elearning.courses (title, description, teacher_id, created_by, updated_by) 
 			VALUES ($1, $2, $3, $4, $5)`
 	stmt, err := database.DB.Prepare(query)
 
@@ -61,7 +61,7 @@ func (c *courseRepositoryImpl) CreateCourse(course *model.Course, userId int64) 
 }
 
 func (c *courseRepositoryImpl) GetCourseById(courseId int64) (*model.Course, error) {
-	query := "SELECT course_id, title, description, teacher_id FROM courses WHERE course_id = $1"
+	query := "SELECT course_id, title, description, teacher_id FROM elearning.courses WHERE course_id = $1"
 	row := database.DB.QueryRow(query, courseId)
 	var course model.Course
 	err := row.Scan(&course.CourseId, &course.Title, &course.Description, &course.TeacherId)
@@ -94,7 +94,7 @@ func (c *courseRepositoryImpl) UpdateCourse(course *model.Course) error {
 		args = append(args, course.UpdatedBy)
 	}
 
-	query := fmt.Sprintf("UPDATE courses SET %s WHERE course_id = $%d", strings.Join(setParts, ", "), placeholderIndex)
+	query := fmt.Sprintf("UPDATE elearning.courses SET %s WHERE course_id = $%d", strings.Join(setParts, ", "), placeholderIndex)
 	args = append(args, course.CourseId)
 
 	_, err := database.DB.Exec(query, args...)
@@ -102,7 +102,7 @@ func (c *courseRepositoryImpl) UpdateCourse(course *model.Course) error {
 }
 
 func (c *courseRepositoryImpl) DeleteCourse(courseId int64) error {
-	query := "DELETE FROM courses WHERE course_id = $1"
+	query := "DELETE FROM elearning.courses WHERE course_id = $1"
 	_, err := database.DB.Exec(query, courseId)
 	return err
 }

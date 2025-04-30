@@ -45,7 +45,7 @@ func (m *moduleRepositoryImpl) UpdateModules(modules []*model.Module) error {
 		}
 
 		// Tạo câu truy vấn động chỉ cho các trường có giá trị
-		query := "UPDATE modules SET "
+		query := "UPDATE elearning.modules SET "
 		params := []interface{}{}
 		updateFields := []string{}
 		paramIndex := 1 // PostgreSQL sử dụng $1, $2, ... thay vì ?
@@ -104,7 +104,7 @@ func (m *moduleRepositoryImpl) CreateModules(modules []*model.Module, courseId i
 	}
 
 	query := fmt.Sprintf(
-		"INSERT INTO modules (title, description, order_index, course_id) VALUES %s",
+		"INSERT INTO elearning.modules (title, description, order_index, course_id) VALUES %s",
 		strings.Join(placeholders, ","),
 	)
 
@@ -121,7 +121,7 @@ func NewModuleRepository() ModuleRepository {
 
 func (m *moduleRepositoryImpl) GetAllModulesByCourse(courseId int64) ([]*model.Module, error) {
 	query := `
-	SELECT module_id, title, description, order_index FROM modules WHERE course_id = $1
+	SELECT module_id, title, description, order_index FROM elearning.modules WHERE course_id = $1
 `
 	rows, err := database.DB.Query(query, courseId)
 	if err != nil {

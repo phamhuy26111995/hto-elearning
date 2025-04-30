@@ -4,7 +4,7 @@ import "time"
 
 type Lessons struct {
 	LessonId   int64     `json:"lessonId"`
-	ModuleId   int64     `json:"moduleId"`
+	ModuleId   int64     `json:"moduleId,omitempty"`
 	Title      string    `json:"title"`
 	Content    string    `json:"content"`
 	VideoUrl   string    `json:"videoUrl"`

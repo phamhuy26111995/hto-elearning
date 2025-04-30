@@ -6,7 +6,7 @@ import (
 	"github.com/phamhuy26111995/hto-elearning/internal/service"
 )
 
-func registerUserController() *controller.UserController {
+func RegisterUserController() *controller.UserController {
 
 	userRepo := repository.NewUserRepository()
 	userService := service.NewUserService(userRepo)

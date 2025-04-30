@@ -21,7 +21,7 @@ func NewQuizRepository() QuizRepository {
 }
 
 func (q *quizRepositoryImpl) GetAllQuizzesByModuleId(moduleId int64) ([]model.Quiz, error) {
-	query := `SELECT quiz_id, title, order_index FROM quizzes WHERE module_id = $1`
+	query := `SELECT quiz_id, title, order_index FROM elearning.quizzes WHERE module_id = $1`
 
 	rows, err := database.DB.Query(query, moduleId)
 	if err != nil {
@@ -59,7 +59,7 @@ func (q *quizRepositoryImpl) CreateQuizzes(quizzes []model.Quiz, moduleId int64)
 	}()
 
 	for _, quiz := range quizzes {
-		query := `INSERT INTO quizzes (module_id, title, order_index) VALUES ($1, $2,$3)`
+		query := `INSERT INTO elearning.quizzes (module_id, title, order_index) VALUES ($1, $2,$3)`
 		_, err := tx.Exec(query, moduleId, quiz.Title, quiz.OrderIndex)
 		if err != nil {
 			return err
@@ -91,7 +91,7 @@ func (q *quizRepositoryImpl) UpdateQuizzes(quizzes []model.Quiz) error {
 	}()
 
 	for _, quiz := range quizzes {
-		query := `UPDATE quizzes SET title = $1, order_index = $3 WHERE quiz_id = $2`
+		query := `UPDATE elearning.quizzes SET title = $1, order_index = $3 WHERE quiz_id = $2`
 		_, err := tx.Exec(query, quiz.Title, quiz.QuizId, quiz.OrderIndex)
 		if err != nil {
 			return err

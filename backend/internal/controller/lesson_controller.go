@@ -18,9 +18,9 @@ func NewLessonController(lessonService service.LessonService) LessonController {
 	}
 }
 
-func (l LessonController) GetLessonsByModuleId(context *gin.Context) {
+func (l *LessonController) GetLessonsByModuleId(context *gin.Context) {
 
-	moduleId, _ := context.Params.Get("moduleId")
+	moduleId := context.Param("moduleId")
 	moduleIdInt, _ := strconv.ParseInt(moduleId, 10, 64)
 
 	lessons, err := l.lessonService.GetLessonsByModuleId(moduleIdInt)

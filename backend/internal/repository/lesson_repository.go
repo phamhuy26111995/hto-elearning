@@ -19,7 +19,7 @@ type LessonRepository interface {
 type lessonRepositoryImpl struct{}
 
 func (l lessonRepositoryImpl) GetAllLessonsByModuleId(moduleId int64) ([]model.Lessons, error) {
-	query := `SELECT lesson_id, title, content, video_url, order_index FROM lessons WHERE module_id = $1`
+	query := `SELECT lesson_id, title, content, video_url, order_index FROM elearning.lessons WHERE module_id = $1`
 
 	rows, err := database.DB.Query(query, moduleId)
 	if err != nil {
@@ -57,7 +57,7 @@ func (l lessonRepositoryImpl) CreateLesson(lessons []model.Lessons, moduleId int
 	}()
 
 	for _, lesson := range lessons {
-		query := `INSERT INTO lessons (module_id, title, content, video_url, order_index) VALUES ($1, $2, $3, $4, $5)`
+		query := `INSERT INTO elearning.lessons (module_id, title, content, video_url, order_index) VALUES ($1, $2, $3, $4, $5)`
 		_, err := tx.Exec(query, moduleId, lesson.Title, lesson.Content, lesson.VideoUrl, lesson.OrderIndex)
 		if err != nil {
 			return err
@@ -93,7 +93,7 @@ func (l lessonRepositoryImpl) UpdateLessons(lessons []model.Lessons) error {
 		}
 
 		// Tạo câu truy vấn động chỉ cho các trường có giá trị
-		query := "UPDATE lessons SET "
+		query := "UPDATE elearning.lessons SET "
 		params := []interface{}{}
 		updateFields := []string{}
 		paramIndex := 1 // PostgreSQL sử dụng $1, $2, ... thay vì ?

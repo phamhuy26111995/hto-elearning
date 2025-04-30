@@ -21,12 +21,17 @@ func Authenticate(context *gin.Context) {
 		return
 	}
 
+	context.Set("userId", userId)
+	context.Set("role", role)
+	context.Next()
+}
+
+func AuthorizeTeacher(context *gin.Context) {
+	role := context.GetString("role")
 	if role != "TEACHER" {
-		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not a teacher."})
+		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
 		return
 	}
 
-	context.Set("userId", userId)
-	context.Set("role", role)
 	context.Next()
 }

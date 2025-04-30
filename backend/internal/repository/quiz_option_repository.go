@@ -15,7 +15,7 @@ type quizOptionRepositoryImpl struct {
 }
 
 func (q quizOptionRepositoryImpl) GetAllQuizOptionsByQuestionId(questionId int64) ([]model.QuizOption, error) {
-	query := "SELECT option_id, question_id, option_content, is_correct, order_index FROM quiz_options WHERE question_id = $1"
+	query := "SELECT option_id, question_id, option_content, is_correct, order_index FROM elearning.quiz_options WHERE question_id = $1"
 
 	rows, err := database.DB.Query(query, questionId)
 	if err != nil {
@@ -46,7 +46,7 @@ func (q quizOptionRepositoryImpl) CreateQuizOptions(quizOptions []model.QuizOpti
 	}
 	defer tx.Rollback()
 	for _, quizOption := range quizOptions {
-		query := "INSERT INTO quiz_options (question_id, option_content, is_correct, order_index) VALUES ($1, $2, $3 , $4)"
+		query := "INSERT INTO elearning.quiz_options (question_id, option_content, is_correct, order_index) VALUES ($1, $2, $3 , $4)"
 		_, err := tx.Exec(query, questionId, quizOption.OptionContent, quizOption.IsCorrect, quizOption.OrderIndex)
 		if err != nil {
 			return err
@@ -65,7 +65,7 @@ func (q quizOptionRepositoryImpl) UpdateQuizOptions(quizOptions []model.QuizOpti
 	}
 	defer tx.Rollback()
 	for _, quizOption := range quizOptions {
-		query := "UPDATE quiz_options SET option_content = $1, is_correct = $2, order_index = $4 WHERE option_id = $3"
+		query := "UPDATE elearning.quiz_options SET option_content = $1, is_correct = $2, order_index = $4 WHERE option_id = $3"
 		_, err := tx.Exec(query, quizOption.OptionContent, quizOption.IsCorrect, quizOption.OptionId, quizOption.OrderIndex)
 		if err != nil {
 			return err

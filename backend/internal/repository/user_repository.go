@@ -26,7 +26,7 @@ type userRepositoryImpl struct {
 }
 
 func (u *userRepositoryImpl) CreateStudent(student *model.User, teacherId int64) error {
-	query := `INSERT INTO users (username,email, password, created_by,updated_by,teacher_id) 
+	query := `INSERT INTO elearning.users (username,email, password, created_by,updated_by,teacher_id) 
 			VALUES ($1, $2, $3, $4, $5, $6)`
 	stmt, err := database.DB.Prepare(query)
 
@@ -39,7 +39,7 @@ func (u *userRepositoryImpl) CreateStudent(student *model.User, teacherId int64)
 }
 
 func (u *userRepositoryImpl) GetAllByTeacherId(teacherId int64) ([]model.User, error) {
-	query := `SELECT user_id, username, email, role, created_at, updated_at FROM users WHERE teacher_id = $1`
+	query := `SELECT user_id, username, email, role, created_at, updated_at FROM elearning.users WHERE teacher_id = $1`
 	rows, err := database.DB.Query(query, teacherId)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (u *userRepositoryImpl) GetAllByTeacherId(teacherId int64) ([]model.User, e
 
 func (u *userRepositoryImpl) GetUserByUsernameToVal(username string) (*model.User, error) {
 	var user model.User
-	query := `SELECT user_id,username,password, role  FROM users WHERE username = $1`
+	query := `SELECT user_id,username,password, role  FROM elearning.users WHERE username = $1`
 	err := database.DB.QueryRow(query, username).Scan(&user.UserID, &user.Username, &user.Password, &user.Role)
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ func (u *userRepositoryImpl) UpdateUser(user *model.User) error {
 	}
 
 	// Xây dựng câu query với các placeholder theo kiểu PostgreSQL.
-	query := fmt.Sprintf("UPDATE users SET %s WHERE user_id = $%d", strings.Join(setParts, ", "), placeholderIndex)
+	query := fmt.Sprintf("UPDATE elearning.users SET %s WHERE user_id = $%d", strings.Join(setParts, ", "), placeholderIndex)
 	// Thêm điều kiện WHERE, ở đây cập nhật dựa trên user_id.
 	args = append(args, user.UserID)
 
@@ -119,7 +119,7 @@ func (u *userRepositoryImpl) UpdateUser(user *model.User) error {
 }
 
 func (u *userRepositoryImpl) GetUserById(userId int64) (*model.User, error) {
-	query := "SELECT user_id, username, email, role, created_at, updated_at FROM users WHERE user_id = $1"
+	query := "SELECT user_id, username, email, role, created_at, updated_at FROM elearning.users WHERE user_id = $1"
 	row := database.DB.QueryRow(query, userId)
 	var user model.User
 	err := row.Scan(&user.UserID, &user.Username, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
@@ -131,7 +131,7 @@ func (u *userRepositoryImpl) GetUserById(userId int64) (*model.User, error) {
 }
 
 func (u *userRepositoryImpl) CreateUser(user *model.User) error {
-	query := `INSERT INTO users (username,email, password, role, created_by,updated_by) 
+	query := `INSERT INTO elearning.users (username,email, password, role, created_by,updated_by) 
 			VALUES ($1, $2, $3, $4, $5, $6)`
 	stmt, err := database.DB.Prepare(query)
 
@@ -148,7 +148,7 @@ func NewUserRepository() UserRepository {
 }
 
 func (u *userRepositoryImpl) GetAll() ([]model.User, error) {
-	query := "SELECT user_id, username, email, role, created_at, updated_at FROM users"
+	query := "SELECT user_id, username, email, role, created_at, updated_at FROM elearning.users"
 	rows, err := database.DB.Query(query)
 	if err != nil {
 		return nil, err

@@ -6,7 +6,7 @@ import (
 	"github.com/phamhuy26111995/hto-elearning/internal/service"
 )
 
-func registerLessonController() *controller.LessonController {
+func RegisterLessonController() *controller.LessonController {
 
 	lessonRepo := repository.NewLessonRepository()
 	lessonService := service.NewLessonService(lessonRepo)

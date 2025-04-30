@@ -6,7 +6,7 @@ import (
 	"github.com/phamhuy26111995/hto-elearning/internal/service"
 )
 
-func registerQuizController() *controller.QuizController {
+func RegisterQuizController() *controller.QuizController {
 
 	quizRepo := repository.NewQuizRepository()
 	quizService := service.NewQuizService(quizRepo)
