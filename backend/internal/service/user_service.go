@@ -18,7 +18,7 @@ type UserService interface {
 
 	UpdateUser(user *model.User) error
 
-	Login(user *dto.UserLoginDTO) string
+	Login(user *dto.UserLoginDTO) (jwt string, userInfo *model.User)
 }
 
 type userServiceImpl struct {
@@ -53,19 +53,19 @@ func (service *userServiceImpl) GetAllUsersByTeacherId(teacherId int64) ([]dto.U
 	return dtos, nil
 }
 
-func (service *userServiceImpl) Login(user *dto.UserLoginDTO) string {
+func (service *userServiceImpl) Login(user *dto.UserLoginDTO) (jwt string, userInfo *model.User) {
 	queryUser, err := service.repo.GetUserByUsernameToVal(user.Username)
 
 	if err != nil {
-		return ""
+		return "", nil
 	}
 
 	if utils.CheckPasswordHash(user.Password, queryUser.Password) {
 		token, _ := utils.GenerateToken(queryUser.Username, queryUser.UserID, queryUser.Role)
-		return token
+		return token, queryUser
 	}
 
-	return ""
+	return "", nil
 }
 
 func (service *userServiceImpl) GetUserById(userId int64) (*model.User, error) {

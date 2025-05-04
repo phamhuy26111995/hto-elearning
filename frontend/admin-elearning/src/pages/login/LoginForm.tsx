@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import useUserStore from "@/store/user";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -25,6 +26,7 @@ export function LoginForm({
   } = useForm<FormData>();
 
   let navigate = useNavigate();
+  const { setCurrentUserLogin } = useUserStore();
 
   async function onSubmit(data: FormData) {
     
@@ -35,13 +37,15 @@ export function LoginForm({
       };
       const response = await apiService.post("/login", requestBody);
 
-      const { token }: any = response.data;
+      const { token, userInfo }: any = response.data;
 
       if (!token) {
         return;
       }
 
       localStorage.setItem("token", token);
+
+      setCurrentUserLogin(userInfo);
 
       navigate("/courses");
 

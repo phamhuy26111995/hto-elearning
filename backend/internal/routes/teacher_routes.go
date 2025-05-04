@@ -23,6 +23,7 @@ func TeacherRoutes(server *gin.Engine) {
 	//authenticated.POST("/users/create", userController.CreateUser)
 	authenticated.POST("/users/create-student", userController.CreateStudent)
 	authenticated.PUT("/users/update", userController.UpdateUser)
+	authenticated.GET("/users/current-user", userController.GetCurrentUserLogin)
 	authenticated.GET("/users/:id", userController.GetUserById)
 
 	authenticated.GET("/courses", courseController.GetAllCourses)

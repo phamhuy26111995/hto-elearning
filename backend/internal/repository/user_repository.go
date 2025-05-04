@@ -61,8 +61,8 @@ func (u *userRepositoryImpl) GetAllByTeacherId(teacherId int64) ([]model.User, e
 
 func (u *userRepositoryImpl) GetUserByUsernameToVal(username string) (*model.User, error) {
 	var user model.User
-	query := `SELECT user_id,username,password, role  FROM elearning.users WHERE username = $1`
-	err := database.DB.QueryRow(query, username).Scan(&user.UserID, &user.Username, &user.Password, &user.Role)
+	query := `SELECT user_id,username,email,password, role  FROM elearning.users WHERE username = $1`
+	err := database.DB.QueryRow(query, username).Scan(&user.UserID, &user.Username, &user.Email, &user.Password, &user.Role)
 	if err != nil {
 		return nil, err
 	}

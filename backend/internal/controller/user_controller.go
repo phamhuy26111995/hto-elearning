@@ -83,13 +83,32 @@ func (controller *UserController) CreateStudent(context *gin.Context) {
 	context.JSON(http.StatusCreated, gin.H{"Success": "Student created successfully"})
 }
 
-func (controller *UserController) GetUserById(context *gin.Context) {
-	userId := context.Param("id")
-	parseInt, parseErr := strconv.ParseInt(userId, 10, 64)
-	if parseErr != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+func (controller *UserController) GetCurrentUserLogin(context *gin.Context) {
+	userIdFromContext, _ := context.Get("userId")
+
+	userId := userIdFromContext.(int64)
+
+	user, err := controller.userService.GetUserById(userId)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
-	user, err := controller.userService.GetUserById(parseInt)
+
+	context.JSON(http.StatusOK, gin.H{"userInfo": user})
+}
+
+func (controller *UserController) GetUserById(context *gin.Context) {
+	userIdParam := context.Param("id")
+
+	userId, parseErr := strconv.ParseInt(userIdParam, 10, 64)
+
+	if parseErr != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": parseErr.Error()})
+		return
+	}
+
+	user, err := controller.userService.GetUserById(userId)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -121,12 +140,15 @@ func (controller *UserController) Login(context *gin.Context) {
 		return
 	}
 
-	token := controller.userService.Login(&user)
+	token, userInfo := controller.userService.Login(&user)
 
 	if token == "" {
 		context.JSON(http.StatusUnauthorized, gin.H{"Unauthorized": "Invalid username or password"})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"token": token})
+	userInfoDto := dto.UserDTO{UserID: userInfo.UserID, Username: userInfo.Username, Email: userInfo.Email, Role: userInfo.Role,
+		CreatedAt: userInfo.CreatedAt, CreatedBy: userInfo.CreatedBy, UpdatedAt: userInfo.UpdatedAt, UpdatedBy: userInfo.UpdatedBy}
+
+	context.JSON(http.StatusOK, gin.H{"token": token, "userInfo": userInfoDto})
 }
