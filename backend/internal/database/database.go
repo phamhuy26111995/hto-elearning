@@ -55,4 +55,5 @@ func createTables() {
 	createQuizzesTable()
 	createQuizQuestionsTable()
 	createQuizOptionsTable()
+	createEnrollmentsTable()
 }

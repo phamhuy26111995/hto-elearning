@@ -120,3 +120,18 @@ func createQuizOptionsTable() {
 		log.Fatal(err)
 	}
 }
+
+func createEnrollmentsTable() {
+	query := `
+		CREATE TABLE IF NOT EXISTS enrollments (
+		  enrollment_id SERIAL PRIMARY KEY,
+		  user_id INTEGER NOT NULL,      
+		  course_id INTEGER NOT NULL,    
+		  enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+	`
+	_, err := DB.Exec(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+}

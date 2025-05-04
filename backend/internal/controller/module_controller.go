@@ -17,7 +17,7 @@ func NewModuleController(moduleService service.ModuleService) ModuleController {
 }
 
 func (controller *ModuleController) GetAllModulesByCourse(context *gin.Context) {
-	courseId := context.Param("id")
+	courseId := context.Param("courseId")
 	parseInt, parseErr := strconv.ParseInt(courseId, 10, 64)
 
 	if parseErr != nil {

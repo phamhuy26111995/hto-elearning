@@ -9,7 +9,10 @@ import (
 
 type CourseRepository interface {
 	GetAllCoursesByUserId(userId int64) ([]model.Course, error)
+
 	CreateCourse(course *model.Course, userId int64) error
+
+	GetCoursesByStudent(studentId int64, courseId int64) ([]model.Course, error)
 
 	GetCourseById(courseId int64) (*model.Course, error)
 
@@ -19,6 +22,34 @@ type CourseRepository interface {
 }
 
 type courseRepositoryImpl struct{}
+
+func (c *courseRepositoryImpl) GetCoursesByStudent(studentId int64, courseId int64) ([]model.Course, error) {
+	query := `SELECT 
+		c.course_id , c.title , c.description 
+	FROM elearning.enrollments e JOIN elearning.users u ON e.user_id = u.user_id 
+	JOIN elearning.courses c ON e.course_id = c.course_id
+
+	WHERE e.course_id = $1 AND e.user_id = $2
+`
+	rows, err := database.DB.Query(query, courseId, studentId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var courses []model.Course
+	for rows.Next() {
+		var course model.Course
+		err := rows.Scan(&course.CourseId, &course.Title, &course.Description)
+		if err != nil {
+			return nil, err
+		}
+		courses = append(courses, course)
+	}
+
+	return courses, nil
+
+}
 
 func NewCourseRepository() CourseRepository {
 	return &courseRepositoryImpl{}

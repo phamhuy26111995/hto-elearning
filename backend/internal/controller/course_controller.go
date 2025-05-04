@@ -17,13 +17,13 @@ func NewCourseController(courseService service.CourseService) CourseController {
 }
 
 func (c *CourseController) GetAllCourses(ctx *gin.Context) {
-	userId := ctx.Param("id")
-	parseInt, parseErr := strconv.ParseInt(userId, 10, 64)
-	if parseErr != nil {
-		ctx.JSON(400, parseErr)
+	raw, _ := ctx.Get("userId")
+	userId, ok := raw.(int64)
+	if !ok {
+		ctx.JSON(500, "Error when get context value userId")
 		return
 	}
-	courses, err := c.courseService.GetAllCourses(parseInt)
+	courses, err := c.courseService.GetAllCourses(userId)
 	if err != nil {
 		ctx.JSON(500, err)
 		return
