@@ -133,6 +133,21 @@ func (controller *UserController) UpdateUser(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"user": user})
 }
 
+func (controller *UserController) UpdateStudent(context *gin.Context) {
+	var user model.User
+	if err := context.ShouldBindJSON(&user); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := controller.userService.UpdateUser(&user); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"user": user})
+}
+
 func (controller *UserController) Login(context *gin.Context) {
 	var user dto.UserLoginDTO
 	if err := context.ShouldBindJSON(&user); err != nil {
@@ -151,4 +166,52 @@ func (controller *UserController) Login(context *gin.Context) {
 		CreatedAt: userInfo.CreatedAt, CreatedBy: userInfo.CreatedBy, UpdatedAt: userInfo.UpdatedAt, UpdatedBy: userInfo.UpdatedBy}
 
 	context.JSON(http.StatusOK, gin.H{"token": token, "userInfo": userInfoDto})
+}
+
+func (controller *UserController) EnrollCourseForStudent(context *gin.Context) {
+	var enrollment dto.EnrollmentDTO
+	if err := context.ShouldBindJSON(&enrollment); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := controller.userService.EnrollCourseForStudent(enrollment.UserId, enrollment.CourseId)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{"Enrollment": "Enrolled successfully"})
+}
+
+func (controller *UserController) UnEnrollCourseForStudent(context *gin.Context) {
+	var enrollment dto.EnrollmentDTO
+	if err := context.ShouldBindJSON(&enrollment); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := controller.userService.UnEnrollCourseForStudent(enrollment.UserId, enrollment.CourseId)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	context.JSON(http.StatusOK, gin.H{"Enrollment": "UnEnrolled successfully"})
+}
+
+func (controller *UserController) ChangeStatus(context *gin.Context) {
+	var student dto.UserDTO
+	if err := context.ShouldBindJSON(&student); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := controller.userService.ChangeStatus(student.UserID, student.Status)
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"Success": "Status changed successfully"})
 }

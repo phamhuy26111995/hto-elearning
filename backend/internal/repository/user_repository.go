@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/phamhuy26111995/hto-elearning/internal/database"
 	"github.com/phamhuy26111995/hto-elearning/internal/model"
+	"github.com/phamhuy26111995/hto-elearning/internal/utils"
 	"strings"
 )
 
@@ -20,9 +21,38 @@ type UserRepository interface {
 	GetUserByUsernameToVal(username string) (*model.User, error)
 
 	GetAllByTeacherId(teacherId int64) ([]model.User, error)
+
+	EnrollCourseForStudent(studentId int64, courseId int64) error
+	UnEnrollCourseForStudent(studentId int64, courseId int64) error
+
+	ChangeStatus(studentId int64, status string) error
 }
 
 type userRepositoryImpl struct {
+}
+
+func (u *userRepositoryImpl) UnEnrollCourseForStudent(studentId int64, courseId int64) error {
+	query := `DELETE FROM elearning.enrollments WHERE user_id = $1 AND course_id = $2`
+	_, err := database.DB.Exec(query, studentId, courseId)
+	return err
+}
+
+func (u *userRepositoryImpl) ChangeStatus(studentId int64, status string) error {
+	query := `UPDATE elearning.users SET status = $1 WHERE user_id = $2 AND role = 'STUDENT'`
+	_, err := database.DB.Exec(query, status, studentId)
+	return err
+}
+
+func (u *userRepositoryImpl) EnrollCourseForStudent(studentId int64, courseId int64) error {
+	query := `INSERT INTO elearning.enrollments (user_id, course_id) VALUES ($1, $2)`
+	stmt, err := database.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.Exec(studentId, courseId)
+	return err
 }
 
 func (u *userRepositoryImpl) CreateStudent(student *model.User, teacherId int64) error {
@@ -86,6 +116,8 @@ func (u *userRepositoryImpl) UpdateUser(user *model.User) error {
 		placeholderIndex++
 	}
 	if user.Password != "" {
+		hashPassword, _ := utils.HashPassword(user.Password)
+		user.Password = hashPassword
 		setParts = append(setParts, fmt.Sprintf("password = $%d", placeholderIndex))
 		args = append(args, user.Password)
 		placeholderIndex++

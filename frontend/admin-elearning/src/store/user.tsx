@@ -1,14 +1,8 @@
 // src/stores/userStore.ts
 import studentServices from "@/services/student";
+import { User } from "@/types/user";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-
-interface User {
-  userId: number;
-  username: string;
-  email: string;
-  role: string;
-}
 
 interface UserStore {
   users: User[];
@@ -24,7 +18,7 @@ const useUserStore = create<UserStore>()(
       currentUserLogin: undefined,
 
       async setUsers() {
-        const data = await studentServices.getAll();
+        const { data } = await studentServices.getAll();
         set({ users: data });
       },
 

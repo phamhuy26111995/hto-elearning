@@ -7,6 +7,7 @@ type UserDTO struct {
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Role      string    `json:"role"`
+	Status    string    `json:"status"`
 	UpdatedBy int64     `json:"updatedBy"`
 	CreatedBy int64     `json:"createdBy"`
 	CreatedAt time.Time `json:"createdAt"`

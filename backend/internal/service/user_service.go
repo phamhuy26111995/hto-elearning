@@ -19,10 +19,38 @@ type UserService interface {
 	UpdateUser(user *model.User) error
 
 	Login(user *dto.UserLoginDTO) (jwt string, userInfo *model.User)
+
+	EnrollCourseForStudent(userId int64, courseId int64) error
+
+	UnEnrollCourseForStudent(userId int64, courseId int64) error
+
+	ChangeStatus(studentId int64, status string) error
 }
 
 type userServiceImpl struct {
 	repo repository.UserRepository
+}
+
+func (service *userServiceImpl) ChangeStatus(studentId int64, status string) error {
+	return service.repo.ChangeStatus(studentId, status)
+}
+
+func (service *userServiceImpl) EnrollCourseForStudent(userId int64, courseId int64) error {
+	err := service.repo.EnrollCourseForStudent(userId, courseId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (service *userServiceImpl) UnEnrollCourseForStudent(userId int64, courseId int64) error {
+	err := service.repo.UnEnrollCourseForStudent(userId, courseId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (service *userServiceImpl) CreateStudent(user *model.User, teacherId int64) error {
