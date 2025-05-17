@@ -8,6 +8,10 @@ const studentServices = {
     return await axiosClient.get(`${STUDENT_ENDPOINT}/get-students`);
   },
 
+  getById: async (id: number) => {
+    return await axiosClient.get(`${STUDENT_ENDPOINT}/${id}`);
+  },
+
   createStudent: async (data: any) => {
     return await axiosClient.post(`${STUDENT_ENDPOINT}/create-student`, data);
   },

@@ -22,16 +22,17 @@ axiosClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// // 3. Response interceptor (xử lý lỗi chung)
-// axiosClient.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     // ví dụ: nếu 401 Unauthorized thì chuyển về trang login
-//     if (error.response?.status === 401) {
-//       window.location.href = "/login";
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+// 3. Response interceptor (xử lý lỗi chung)
+axiosClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // ví dụ: nếu 401 Unauthorized thì chuyển về trang login
+    localStorage.removeItem("token");
+    if (error.response?.status === 401) {
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default axiosClient;

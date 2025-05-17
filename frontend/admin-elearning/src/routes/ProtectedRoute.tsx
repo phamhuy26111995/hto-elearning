@@ -1,11 +1,11 @@
 // src/components/auth/ProtectedRoute.tsx
+import useUserStore from "@/store/user";
 import { ReactNode } from "react";
 import { Navigate, Outlet } from "react-router";
 
-
-
 export function ProtectedRoute() {
   const token = localStorage.getItem("token");
+  const { currentUserLogin } = useUserStore();
 
   if (!token) {
     // no token → redirect to login
@@ -13,5 +13,5 @@ export function ProtectedRoute() {
   }
 
   // otherwise render matched child routes
-  return <Outlet />;
+  return currentUserLogin && <Outlet />;
 }
