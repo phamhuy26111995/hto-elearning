@@ -30,7 +30,7 @@ func TeacherRoutes(server *gin.Engine) {
 	authenticated.GET("/users/current-user", userController.GetCurrentUserLogin)
 	authenticated.GET("/users/:id", userController.GetUserById)
 
-	authenticated.GET("/courses", courseController.GetAllCourses)
+	authenticated.GET("/course/get-all", courseController.GetAllCourses)
 	authenticated.POST("/course/create", courseController.CreateCourse)
 	authenticated.PUT("/course/update", courseController.UpdateCourse)
 	authenticated.GET("/course/:id", courseController.GetCourse)

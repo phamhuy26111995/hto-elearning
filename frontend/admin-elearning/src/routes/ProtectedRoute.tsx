@@ -1,6 +1,5 @@
 // src/components/auth/ProtectedRoute.tsx
 import useUserStore from "@/store/user";
-import { ReactNode } from "react";
 import { Navigate, Outlet } from "react-router";
 
 export function ProtectedRoute() {

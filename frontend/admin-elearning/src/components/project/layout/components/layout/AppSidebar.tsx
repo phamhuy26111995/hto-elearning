@@ -20,6 +20,7 @@ import {
 import { NavMain } from "./NavMain"
 import { NavUser } from "./NavUser"
 import { TeamSwitcher } from "./TeamSwitcher"
+import { ROUTES } from "@/consts/const"
 
 
 const data = {
@@ -54,11 +55,11 @@ const data = {
       items: [
         {
           title: "Xem danh sách khóa học",
-          url: "/courses",
+          url: ROUTES.COURSE,
         },
         {
           title: "Tạo mới khóa học",
-          url: "/course/new",
+          url: ROUTES.COURSE + "/new",
         },
       ],
     },
@@ -69,11 +70,11 @@ const data = {
       items: [
         {
           title: "Xem danh sách học sinh",
-          url: "/students",
+          url: ROUTES.STUDENT,
         },
         {
           title: "Tạo mới học sinh",
-          url: "/student/new",
+          url: ROUTES.STUDENT + "/new",
         },
       ],
     },
