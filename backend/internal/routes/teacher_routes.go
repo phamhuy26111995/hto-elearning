@@ -38,6 +38,7 @@ func TeacherRoutes(server *gin.Engine) {
 
 	authenticated.GET("/modules/:courseId", moduleController.GetAllModulesByCourse)
 	authenticated.POST("/modules/create", moduleController.CreateModules)
+	authenticated.POST("/modules/create-bulk", moduleController.SaveBulkOfModules)
 	authenticated.PUT("/modules/update", moduleController.UpdateModules)
 
 	authenticated.GET("/lessons/:moduleId", lessonController.GetLessonsByModuleId)
