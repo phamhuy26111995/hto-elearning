@@ -20,6 +20,7 @@ const useStudentStore = create<StudentStore>()(
       async fetchStudents() {
         const { data } = await studentServices.getAll();
         const userList = data.users as User[];
+        console.log("🚀 ~ data:", data)
         const usersWithNo = userList.map((user, index) => ({ ...user, numberNo: index + 1,key : user.userId }));
 
         set({ students : usersWithNo }, undefined, "fetchStudents");

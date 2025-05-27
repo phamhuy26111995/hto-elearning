@@ -26,12 +26,12 @@ export function LoginForm({
     formState: { errors, isSubmitting },
   } = useForm<FormData>();
 
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const { setCurrentUserLogin, currentUserLogin } = useUserStore();
 
   useEffect(() => {
     if (currentUserLogin) {
-      navigate("/courses");
+      navigate("/course");
     }
   }, [currentUserLogin]);
 
