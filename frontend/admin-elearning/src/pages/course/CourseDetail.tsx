@@ -1,27 +1,65 @@
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import React from "react";
-
+import { FormCourse } from "@/types/course";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import Module from "./Module";
+import { Button } from "@/components/ui/button";
 
 export default function CourseDetail() {
   const { courseId } = useParams();
+  const methods = useForm<FormCourse>({
+    defaultValues: {
+      modules: [
+        {
+          title: "",
+          description: "",
+          lessons: [],
+          quizzes: [],
+          orderIndex: 0,
+        },
+      ],
+    },
+  });
+
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+  } = methods;
+
+  const {
+    fields: moduleFields,
+    append: appendModule,
+    remove: removeModule,
+  } = useFieldArray<FormCourse, "modules">({
+    control,
+    name: "modules",
+  });
+
+  function onSubmit(data: FormCourse) {
+    console.log(data);
+  }
 
   return (
-    <div className="flex flex-col p-7">
-      <div>
-        <h1>Create Course</h1>
-      </div>
-
-      <div>
-        <div>Course title</div>
-        <Input />
-      </div>
-
-      <div>
-        <Module />
-      </div>
-    </div>
+    <FormProvider {...methods}>
+      {moduleFields.map((module, index) => {
+        return <Module id={index} key={module.id} />;
+      })}
+      <Button
+        onClick={() =>
+          appendModule({
+            title: "",
+            description: "",
+            lessons: [],
+            quizzes: [],
+            orderIndex: 0,
+            courseId: Number(courseId),
+            moduleId: 0,
+          })
+        }
+      >
+        Add Module
+      </Button>
+      <Button onClick={handleSubmit(onSubmit)}>Submit Form</Button>
+    </FormProvider>
   );
 }

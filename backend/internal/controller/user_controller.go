@@ -140,12 +140,21 @@ func (controller *UserController) UpdateStudent(context *gin.Context) {
 		return
 	}
 
+	rawUserId, exists := context.Get("userId")
+
+	if !exists {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	user.UpdatedBy = rawUserId.(int64)
+
 	if err := controller.userService.UpdateUser(&user); err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"user": user})
+	context.JSON(http.StatusOK, gin.H{"user_id": user.UserID})
 }
 
 func (controller *UserController) Login(context *gin.Context) {
@@ -214,4 +223,35 @@ func (controller *UserController) ChangeStatus(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, gin.H{"Success": "Status changed successfully"})
+}
+
+func (controller *UserController) DeleteUser(context *gin.Context) {
+	param := context.Param("id")
+
+	rawUserId, exists := context.Get("userId")
+
+	if !exists {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorize"})
+		return
+	}
+
+	userId, parseErr := strconv.ParseInt(param, 10, 64)
+
+	if parseErr != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "Parse Param Failed"})
+		return
+	}
+
+	var teacherId int64
+
+	teacherId = rawUserId.(int64)
+
+	err := controller.userService.DeleteUserPermanently(userId, teacherId)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"Error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"Success": "Delete successfully"})
 }

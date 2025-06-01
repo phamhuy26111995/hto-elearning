@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"github.com/phamhuy26111995/hto-elearning/internal/dto"
 	"github.com/phamhuy26111995/hto-elearning/internal/model"
 	"github.com/phamhuy26111995/hto-elearning/internal/repository"
@@ -18,6 +19,8 @@ type UserService interface {
 
 	UpdateUser(user *model.User) error
 
+	DeleteUserPermanently(userId int64, teacherId int64) error
+
 	Login(user *dto.UserLoginDTO) (jwt string, userInfo *model.User)
 
 	EnrollCourseForStudent(userId int64, courseId int64) error
@@ -29,6 +32,23 @@ type UserService interface {
 
 type userServiceImpl struct {
 	repo repository.UserRepository
+}
+
+func (service *userServiceImpl) DeleteUserPermanently(userId int64, teacherId int64) error {
+	isValid, err := service.repo.CheckValidToDelete(userId, teacherId)
+
+	if !isValid {
+		if err != nil {
+			return err
+		} else {
+			return errors.New("Invalid User To Delete")
+		}
+	}
+
+	err = service.repo.DeleteUser(userId)
+
+	return err
+
 }
 
 func (service *userServiceImpl) ChangeStatus(studentId int64, status string) error {
@@ -70,10 +90,14 @@ func (service *userServiceImpl) GetAllUsersByTeacherId(teacherId int64) ([]dto.U
 
 	for i, m := range models {
 		dtos[i] = dto.UserDTO{
-			UserID:   m.UserID,
-			Username: m.Username,
-			Email:    m.Email,
-			Role:     m.Role,
+			UserID:    m.UserID,
+			Username:  m.Username,
+			Email:     m.Email,
+			Role:      m.Role,
+			CreatedAt: m.CreatedAt,
+			CreatedBy: m.CreatedBy,
+			UpdatedAt: m.UpdatedAt,
+			UpdatedBy: m.UpdatedBy,
 		}
 	}
 

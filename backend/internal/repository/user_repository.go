@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/phamhuy26111995/hto-elearning/internal/database"
@@ -26,9 +27,36 @@ type UserRepository interface {
 	UnEnrollCourseForStudent(studentId int64, courseId int64) error
 
 	ChangeStatus(studentId int64, status string) error
+
+	DeleteUser(userId int64) error
+
+	CheckValidToDelete(userId int64, teacherId int64) (bool, error)
 }
 
 type userRepositoryImpl struct {
+}
+
+func (u *userRepositoryImpl) DeleteUser(userId int64) error {
+	query := `DELETE FROM elearning.users WHERE user_id = $1`
+	_, err := database.DB.Exec(query, userId)
+
+	return err
+}
+
+func (u *userRepositoryImpl) CheckValidToDelete(userId int64, teacherId int64) (bool, error) {
+	query := `SELECT 1 FROM elearning.users WHERE user_id = $1 AND teacher_id = $2`
+	var exists int
+	err := database.DB.QueryRow(query, userId, teacherId).Scan(&exists)
+	if err == sql.ErrNoRows {
+		// No matching row → userId is not valid under that teacherId
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 func (u *userRepositoryImpl) UnEnrollCourseForStudent(studentId int64, courseId int64) error {
@@ -56,8 +84,8 @@ func (u *userRepositoryImpl) EnrollCourseForStudent(studentId int64, courseId in
 }
 
 func (u *userRepositoryImpl) CreateStudent(student *model.User, teacherId int64) error {
-	query := `INSERT INTO elearning.users (username,email, password, created_by,updated_by,teacher_id) 
-			VALUES ($1, $2, $3, $4, $5, $6)`
+	query := `INSERT INTO elearning.users (username,email, password, created_by,updated_by,teacher_id, created_at , updated_at) 
+			VALUES ($1, $2, $3, $4, $5, $6, NOW() , NOW())`
 	stmt, err := database.DB.Prepare(query)
 
 	if err != nil {
@@ -69,7 +97,7 @@ func (u *userRepositoryImpl) CreateStudent(student *model.User, teacherId int64)
 }
 
 func (u *userRepositoryImpl) GetAllByTeacherId(teacherId int64) ([]model.User, error) {
-	query := `SELECT user_id, username, email, role, created_at, updated_at FROM elearning.users WHERE teacher_id = $1`
+	query := `SELECT user_id, username, email, role, created_at, updated_at, created_by, updated_by FROM elearning.users WHERE teacher_id = $1`
 	rows, err := database.DB.Query(query, teacherId)
 	if err != nil {
 		return nil, err
@@ -80,7 +108,7 @@ func (u *userRepositoryImpl) GetAllByTeacherId(teacherId int64) ([]model.User, e
 	var users []model.User
 	for rows.Next() {
 		var user model.User
-		err := rows.Scan(&user.UserID, &user.Username, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+		err := rows.Scan(&user.UserID, &user.Username, &user.Email, &user.Role, &user.CreatedAt, &user.UpdatedAt, &user.CreatedBy, &user.UpdatedBy)
 		if err != nil {
 			return nil, err
 		}
@@ -122,18 +150,12 @@ func (u *userRepositoryImpl) UpdateUser(user *model.User) error {
 		args = append(args, user.Password)
 		placeholderIndex++
 	}
-	// Cột updated_by kiểu số, nếu khác 0 thì cập nhật.
-	if user.UpdatedBy != 0 {
-		setParts = append(setParts, fmt.Sprintf("updated_by = $%d", placeholderIndex))
-		args = append(args, user.UpdatedBy)
-		placeholderIndex++
-	}
-	// Cột created_by kiểu số, nếu khác 0 thì cập nhật.
-	if user.CreatedBy != 0 {
-		setParts = append(setParts, fmt.Sprintf("created_by = $%d", placeholderIndex))
-		args = append(args, user.CreatedBy)
-		placeholderIndex++
-	}
+
+	setParts = append(setParts, fmt.Sprintf("updated_by = $%d", placeholderIndex))
+	args = append(args, user.UpdatedBy)
+	placeholderIndex++
+
+	setParts = append(setParts, "updated_at = NOW() ")
 
 	// Nếu không có trường nào có giá trị cập nhật thì báo lỗi.
 	if len(setParts) == 0 {
