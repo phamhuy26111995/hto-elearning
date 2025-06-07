@@ -23,7 +23,7 @@ export default function StudentDetail() {
     formState: { errors },
     control,
     handleSubmit,
-    setValue,
+    reset, 
   } = useForm<User>({
     defaultValues: {
       role: "STUDENT",
@@ -37,17 +37,20 @@ export default function StudentDetail() {
     if (!id || !Number(id)) {
       return;
     }
+
     getData();
   }, [id]);
+
+
 
   async function getData() {
     const response = await studentServices.getById(Number(id));
 
-    const studentDetail = response.data as User;
+    const data = response.data;
 
-    setValue("username", studentDetail.username);
-    setValue("email", studentDetail.email);
-    setValue("role", studentDetail.role);
+    const studentDetail = data.user as User;
+
+    reset({...studentDetail});
   }
 
   function onSubmit(data: User) {
