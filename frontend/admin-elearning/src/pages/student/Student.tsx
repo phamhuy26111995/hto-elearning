@@ -59,7 +59,6 @@ export default function Student() {
       accessorKey: 'Action',
       header: 'Action',
       cell: ({ row }) => {
-        console.log('🚀 ~ row:', row);
         const infoStudent = row.original; // or row.original.id if your object uses 'id'
         return (
           <div>

@@ -5,3 +5,18 @@ export const ROUTES = {
     COURSE: "/course",
     STUDENT : "/student",
 }
+
+export const ROLES = [
+    {
+        name: 'Học sinh',
+        value: 'STUDENT'
+    },
+    {
+        name: 'Giáo viên',
+        value: 'TEACHER'
+    },
+    {
+        name: 'Quản lý',
+        value: 'ADMIN'
+    }
+]
