@@ -1,48 +1,58 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router';
-import useStudentStore from '@/store/student';
-import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import { User } from '@/types/user';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { ROLES } from '@/consts/const';
+} from "@/components/ui/select";
+import { ROLES } from "@/consts/const";
+import studentServices from "@/services/student";
+import { User } from "@/types/user";
+import React, { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useParams } from "react-router";
 
 export default function StudentDetail() {
   const { studentId: id } = useParams<{ studentId: string }>();
-  const { fetchStudentDetail, studentDetail } = useStudentStore();
   const listRoles = ROLES;
 
   const {
     register,
-    reset,
     formState: { errors },
-    setValue, // ✅ để set role vào form nếu cần submit sau này
-  } = useForm<User>();
-
-  const [selectedRole, setSelectedRole] = useState<string>(''); // ✅ local state
-
-  const hasFetchedRef = useRef(false);
+    control,
+    handleSubmit,
+    setValue,
+  } = useForm<User>({
+    defaultValues: {
+      role: "STUDENT",
+      username: "",
+      password: "",
+      email: "",
+    },
+  });
 
   useEffect(() => {
-    if (id && !hasFetchedRef.current) {
-      hasFetchedRef.current = true;
-      fetchStudentDetail(Number(id));
+    if (!id || !Number(id)) {
+      return;
     }
+    getData();
   }, [id]);
 
-  useEffect(() => {
-    if (studentDetail) {
-      reset(studentDetail);
-      setSelectedRole(studentDetail.role); // ✅ gán giá trị role
-      setValue('role', studentDetail.role); // ✅ set vào form nếu bạn dùng form submit
-    }
-  }, [studentDetail, reset, setValue]);
+  async function getData() {
+    const response = await studentServices.getById(Number(id));
+
+    const studentDetail = response.data as User;
+
+    setValue("username", studentDetail.username);
+    setValue("email", studentDetail.email);
+    setValue("role", studentDetail.role);
+  }
+
+  function onSubmit(data: User) {
+    console.log(data);
+  }
 
   return (
     <React.Fragment>
@@ -54,7 +64,7 @@ export default function StudentDetail() {
           {/* USERNAME */}
           <div>
             <label>Tên đăng nhập</label>
-            <Input {...register('username')} placeholder='Nhập tên đăng nhập' />
+            <Input {...register("username")} placeholder="Nhập tên đăng nhập" />
             {errors.username && (
               <span className="text-red-500">Vui lòng nhập họ tên</span>
             )}
@@ -63,7 +73,11 @@ export default function StudentDetail() {
           {/* PASSWORD */}
           <div>
             <label>Mật khẩu</label>
-            <Input type="password" {...register('password')} placeholder='Nhập mật khẩu' />
+            <Input
+              type="password"
+              {...register("password")}
+              placeholder="Nhập mật khẩu"
+            />
             {errors.password && (
               <span className="text-red-500">Vui lòng nhập mật khẩu</span>
             )}
@@ -72,7 +86,7 @@ export default function StudentDetail() {
           {/* EMAIL */}
           <div>
             <label>Email</label>
-            <Input {...register('email')} placeholder='Nhập email' />
+            <Input {...register("email")} placeholder="Nhập email" />
             {errors.email && (
               <span className="text-red-500">Vui lòng nhập email hợp lệ</span>
             )}
@@ -81,24 +95,28 @@ export default function StudentDetail() {
           {/* ROLE */}
           <div>
             <label>Quyền</label>
-            <Select
-              value={selectedRole}
-              onValueChange={(value) => {
-                setSelectedRole(value);
-                setValue('role', value); // ✅ cập nhật form
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Chọn quyền" />
-              </SelectTrigger>
-              <SelectContent>
-                {listRoles.map((role) => (
-                  <SelectItem key={role.value} value={role.value}>
-                    {role.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {listRoles.map((role) => (
+                      <SelectItem key={role.value} value={role.value}>
+                        {role.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+
+          <div>
+            <Button onClick={handleSubmit(onSubmit)}>Submit</Button>
           </div>
         </div>
       </div>
