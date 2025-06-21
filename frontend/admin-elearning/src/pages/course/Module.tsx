@@ -36,7 +36,7 @@ export default function Module({ id }: ModuleProps) {
           <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
         </TabsList>
         <TabsContent value="lessons">
-          <Lesson moduleIndex={id} />
+          <Lesson moduleIndex={id} />  
         </TabsContent>
         <TabsContent value="quizzes">
           <Quiz moduleIndex={id} />
