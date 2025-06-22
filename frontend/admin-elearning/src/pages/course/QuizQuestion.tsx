@@ -1,8 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormCourse } from "@/types/course";
 import React from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
+import QuizOption from "./QuizOption";
 
 interface QuizQuestionProps {
   quizIndex: number;
@@ -51,8 +53,22 @@ export default function QuizQuestion({
               )}
             />
           </div>
+          <QuizOption key={"option_" + question.id} moduleIndex={moduleIndex} questionIndex={index} quizIndex={quizIndex} />
         </div>
       ))}
+
+      <Button onClick={() => appendQuestion({
+        questionId : 0,
+        questionContent: "",
+        questionType: "",
+        createdAt : "",
+        updatedAt : "",
+
+        orderIndex : questionFields.length,
+        quizId : 0
+      })}>
+        Add Question
+      </Button>
     </div>
   );
 }

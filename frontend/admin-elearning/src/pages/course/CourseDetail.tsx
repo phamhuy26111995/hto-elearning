@@ -65,7 +65,7 @@ export default function CourseDetail() {
   return (
     <FormProvider {...methods}>
       <div className="flex gap-3 flex-col p-4">
-        <div className="flex flex-col gap-2">
+        <span className="flex gap-2 items-center">
           <span className="text-[1.1rem]">Go to tab : </span>
           <Input
             min={1}
@@ -75,7 +75,7 @@ export default function CourseDetail() {
             style={{ maxWidth: "100px" }}
             type="number"
           />
-        </div>
+        </span>
         <Tabs
           defaultValue={"0"}
           value={tabIndex.toString()}

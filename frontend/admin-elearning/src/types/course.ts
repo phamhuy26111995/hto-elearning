@@ -46,7 +46,7 @@ export type QuizQuestion = {
     orderIndex: number;
     createdAt: string;
     updatedAt: string;
-    options : QuizOption[]
+    options? : QuizOption[]
 }
 
 export type QuizOption = {

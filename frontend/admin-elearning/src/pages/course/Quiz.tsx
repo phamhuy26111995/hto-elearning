@@ -4,6 +4,7 @@ import { FormCourse } from "@/types/course";
 import React from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import QuizQuestion from "./QuizQuestion";
+import { Button } from "@/components/ui/button";
 
 interface QuizProps {
   moduleIndex: number;
@@ -41,6 +42,21 @@ export default function Quiz({ moduleIndex }: QuizProps) {
           </div>
         </>
       ))}
+      <Button
+        onClick={() =>
+          appendQuiz({
+            title: "",
+            questions: [],
+            moduleId: moduleIndex,
+            createdAt: "",
+            updatedAt: "",
+            orderIndex: 0,
+            quizId: 0,
+          })
+        }
+      >
+        Add Quiz
+      </Button>
     </div>
   );
 }
