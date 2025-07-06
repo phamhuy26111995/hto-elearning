@@ -80,7 +80,6 @@ export default function CourseDetail() {
           defaultValue={"0"}
           value={tabIndex.toString()}
           onValueChange={(value) => setTabIndex(Number(value))}
-          className="w-[400px]"
         >
           <TabsList>
             {moduleFields.map((module, index) => (

@@ -30,7 +30,7 @@ export default function Module({ id }: ModuleProps) {
           <Input {...register(`modules.${id}.description`)} />
         </div>
       </div>
-      <Tabs defaultValue="lessons" className="w-[400px]">
+      <Tabs defaultValue="lessons">
         <TabsList>
           <TabsTrigger value="lessons">Lessons</TabsTrigger>
           <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
