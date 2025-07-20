@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormCourse } from "@/types/course";
 import React, { useRef } from "react";
-import { useFieldArray, useFormContext } from "react-hook-form";
+import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import QuizOption from "./QuizOption";
 import useModalStore from "@/store/modal";
 import { Card } from "@/components/ui/card";
@@ -85,15 +85,12 @@ function QuestionItem({
   const [questionType, setQuestionType] = React.useState(question.questionType);
   const quizOptionRef = useRef<any>(null);
 
-
   function onChangeSelect(value: string) {
     setQuestionType(value);
-    if(quizOptionRef.current){
+    if (quizOptionRef.current) {
       quizOptionRef.current();
     }
   }
-
- 
 
   return (
     <Card className="p-8" key={question.id}>
@@ -114,21 +111,28 @@ function QuestionItem({
         </div>
         <div className="flex w-full max-w-sm items-center gap-3">
           <Label>Loại câu hỏi</Label>
-          <Select
-            onValueChange={(value) => onChangeSelect(value)}
-            defaultValue={question.questionType}
-            {...register(
-              `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${index}.questionType`
+          <Controller
+            name={`modules.${moduleIndex}.quizzes.${quizIndex}.questions.${index}.questionType`}
+            control={control}
+            render={({ field }) => (
+              <Select
+                onValueChange={(value) => {
+                  onChangeSelect(value);
+                  field.onChange(value);
+                }}
+                value={field.value}
+                defaultValue={question.questionType}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select option" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="SINGLE">Single</SelectItem>
+                  <SelectItem value="MULTIPLE">Multiple</SelectItem>
+                </SelectContent>
+              </Select>
             )}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select option" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="SINGLE">Single</SelectItem>
-              <SelectItem value="MULTIPLE">Multiple</SelectItem>
-            </SelectContent>
-          </Select>
+          />
         </div>
         <Button
           onClick={() =>
@@ -143,7 +147,9 @@ function QuestionItem({
                 register={register}
                 formState={formState}
                 type={questionType}
-                resetOptions={(callback : any) => quizOptionRef.current = callback}
+                resetOptions={(callback: any) =>
+                  (quizOptionRef.current = callback)
+                }
                 getValues={getValues}
                 setValue={setValue}
               />

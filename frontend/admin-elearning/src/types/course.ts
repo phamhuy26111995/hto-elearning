@@ -3,6 +3,9 @@ export interface Course {
     courseId: number;
     title: string;
     description: string;
+    teacherId? : number
+    createdBy? : number
+    updatedBy? : number
 }
 
 export type Module = {
@@ -61,5 +64,16 @@ export type QuizOption = {
 
 
 export type FormCourse = {
+    course : Course
     modules : Module[],
+}
+
+export type CreateCourseBody = {
+    module : Module
+    lessons : Lesson[]
+    quizzes : Quiz[]
+}
+
+export type CourseBodies = {
+
 }

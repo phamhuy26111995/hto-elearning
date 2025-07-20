@@ -1,4 +1,4 @@
-import { FormCourse } from "@/types/course";
+import { CreateCourseBody, FormCourse } from "@/types/course";
 import { FormProvider, set, useFieldArray, useForm } from "react-hook-form";
 import { useParams } from "react-router";
 import Module from "./Module";
@@ -8,12 +8,21 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import FloatingButton from "@/components/project/common/FloatingButton";
 import FloatingLeftBtn from "@/components/project/common/FloatingLeftBtn";
+import courseServices from "@/services/course";
 
 export default function CourseDetail() {
   const { courseId } = useParams();
   const [tabIndex, setTabIndex] = useState<number>(0);
   const methods = useForm<FormCourse>({
     defaultValues: {
+      course : {
+        courseId: isNaN(Number(courseId)) ? 0 : Number(courseId),
+        title: "",
+        description: "",
+        teacherId: 0,
+        createdBy: 0,
+        updatedBy: 0,
+      },
       modules: [
         {
           title: "",
@@ -41,8 +50,12 @@ export default function CourseDetail() {
     name: "modules",
   });
 
-  function onSubmit(data: FormCourse) {
-    console.log(data);
+  async function onSubmit(data: FormCourse) {
+    const requestBody : CreateCourseBody = {
+      module : data.modules[0],
+      lessons : data.modules[0].lessons,
+      quizzes : data.modules[0].quizzes
+    }
   }
 
   function onChangeGoToTab(e: any) {
