@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import FloatingButton from "@/components/project/common/FloatingButton";
+import FloatingLeftBtn from "@/components/project/common/FloatingLeftBtn";
 
 export default function CourseDetail() {
   const { courseId } = useParams();
@@ -64,7 +66,7 @@ export default function CourseDetail() {
 
   return (
     <FormProvider {...methods}>
-      <div className="flex gap-3 flex-col p-4">
+      <div className="flex gap-3 flex-col p-4 relative">
         <span className="flex gap-2 items-center">
           <span className="text-[1.1rem]">Go to tab : </span>
           <Input
@@ -94,24 +96,22 @@ export default function CourseDetail() {
             </TabsContent>
           ))}
         </Tabs>
+        <FloatingButton
+          onClick={() =>
+            appendModule({
+              title: "",
+              description: "",
+              lessons: [],
+              quizzes: [],
+              orderIndex: 0,
+              courseId: Number(courseId),
+              moduleId: 0,
+            })
+          }
+        />
       </div>
-      <Button
-        onClick={() =>
-          appendModule({
-            title: "",
-            description: "",
-            lessons: [],
-            quizzes: [],
-            orderIndex: 0,
-            courseId: Number(courseId),
-            moduleId: 0,
-          })
-        }
-      >
-        Add Module
-      </Button>
 
-      <Button onClick={handleSubmit(onSubmit)}>Submit Form</Button>
+      <FloatingLeftBtn content={"Submit"} onClick={handleSubmit(onSubmit)} />
     </FormProvider>
   );
 }

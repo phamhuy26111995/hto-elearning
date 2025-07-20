@@ -41,7 +41,7 @@ export type Quiz ={
 export type QuizQuestion = {
     questionId: number;
     questionContent: string;
-    questionType: string;
+    questionType: "SINGLE" | "MULTIPLE";
     quizId: number;
     orderIndex: number;
     createdAt: string;

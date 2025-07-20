@@ -11,7 +11,12 @@ import {
 } from "@/components/ui/select";
 import { FormCourse } from "@/types/course";
 
-import React, { useMemo } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+} from "react";
 import {
   Control,
   FormState,
@@ -32,9 +37,9 @@ type QuizOptionProps = {
   type: "SINGLE" | "MULTIPLE";
   setValue: UseFormSetValue<FormCourse>;
   getValues: UseFormGetValues<FormCourse>;
+  resetOptions: (callback?: any) => void;
 };
-
-export default function QuizOption({
+const QuizOption = forwardRef(function QuizOption({
   questionIndex,
   quizIndex,
   moduleIndex,
@@ -44,11 +49,13 @@ export default function QuizOption({
   formState,
   setValue,
   getValues,
+  resetOptions,
 }: QuizOptionProps) {
   const {
     fields: optionFields,
     append: appendOption,
     remove: removeOption,
+    replace,
   } = useFieldArray<
     FormCourse,
     `modules.${number}.quizzes.${number}.questions.${number}.options`
@@ -57,44 +64,43 @@ export default function QuizOption({
     name: `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${questionIndex}.options`,
   });
 
-  const [checkedIndex, setCheckedIndex] = React.useState(
-    getValues(
-      `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${questionIndex}.options`
-    )?.findIndex((option: any) => option.isCorrect) || 0
-  );
-  
-  console.log(checkedIndex);
-  
+  useEffect(() => {
+    if (resetOptions) {
+      resetOptions(replace);
+    }
+  }, [resetOptions]);
+
+  const [_, setTriggerRender] = React.useState(true);
 
   const correctAnswerPath = (index: number): any =>
     `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${questionIndex}.options.${index}.isCorrect`;
 
   const handleSingleChange = (selectedIndex: number) => {
-    debugger
+    setTriggerRender((prev) => !prev);
     optionFields.forEach((_, index) => {
       setValue(correctAnswerPath(index), index === selectedIndex);
-      if(index === selectedIndex) setCheckedIndex(index);
     });
   };
 
-  // const selectedSingleIndex = useMemo(() => {
-  //   return optionFields.findIndex((field) => {
-  //     return getValues(correctAnswerPath(optionFields.indexOf(field)));
-  //   });
-  // }, [optionFields, getValues]);
-
+  const selectedOptions =
+    type === "SINGLE"
+      ? getValues(
+          `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${questionIndex}.options`
+        )?.findIndex((option: any) => option?.isCorrect) || 0
+      : getValues(
+          `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${questionIndex}.options`
+        );
 
   return (
     <div className="space-y-4">
       {type === "SINGLE" ? (
         <RadioGroup
-          key={optionFields.length}
-          value={checkedIndex.toString()}
+          value={selectedOptions!.toString()}
           onValueChange={(val) => handleSingleChange(Number(val))}
         >
           {optionFields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-4">
-              <RadioGroupItem  checked={getValues(correctAnswerPath(index))} value={index.toString()} />
+              <RadioGroupItem value={index.toString()} />
               <Input
                 className="w-full"
                 placeholder={`Option ${index + 1}`}
@@ -109,12 +115,11 @@ export default function QuizOption({
         optionFields.map((field, index) => (
           <div key={field.id} className="flex items-center gap-4">
             <Checkbox
-              // @ts-ignore
               checked={getValues(correctAnswerPath(index))}
-              onCheckedChange={(checked) =>
-                // @ts-ignore
-                setValue(correctAnswerPath(index), !!checked)
-              }
+              onCheckedChange={(checked) => {
+                setValue(correctAnswerPath(index), !!checked);
+                setTriggerRender((prev) => !prev);
+              }}
             />
             <Input
               className="w-full"
@@ -143,11 +148,19 @@ export default function QuizOption({
       >
         Add Option
       </Button>
-      <Button onClick={() => {
-        console.log(getValues(
-          `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${questionIndex}.options`
-        ))
-      }}>Get Value</Button>
+      <Button
+        onClick={() => {
+          console.log(
+            getValues(
+              `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${questionIndex}.options`
+            )
+          );
+        }}
+      >
+        Get Value
+      </Button>
     </div>
   );
-}
+});
+
+export default QuizOption;

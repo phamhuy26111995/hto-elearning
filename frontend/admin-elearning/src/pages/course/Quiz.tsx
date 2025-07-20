@@ -42,12 +42,34 @@ export default function Quiz({ moduleIndex }: QuizProps) {
       >
         {quizFields.map((quiz, index) => (
           <AccordionItem key={quiz.id} value={quiz.id}>
-            <AccordionTrigger>
+            <AccordionTrigger
+              onKeyDown={(e) => {
+                const tagName = (e.target as HTMLElement).tagName.toLowerCase();
+                const isTypingElement =
+                  ["input", "textarea"].includes(tagName) ||
+                  (e.target as HTMLElement).isContentEditable;
+
+                if (isTypingElement && (e.key === " " || e.code === "Space")) {
+                  // Đừng để Accordion xử lý nếu người dùng đang gõ trong input
+                  e.stopPropagation();
+                  return;
+                }
+
+                // Nếu không phải input thì để Accordion xử lý toggle như bình thường
+              }}
+            >
               <div className="flex w-full max-w-sm  items-center gap-3">
                 <Label>Tiêu đề câu hỏi :</Label>
                 <Input
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
+                  // onClick={(e) => e.stopPropagation()}
+                  // onMouseDown={(e) => e.stopPropagation()}
+                  // onKeyDown={(e) => {
+
+                  //   if (e.code === 'Space' || e.key === ' ') {
+                  //     e.preventDefault();
+                  //     e.stopPropagation();
+                  //   }
+                  // }}
                   {...register(`modules.${moduleIndex}.quizzes.${index}.title`)}
                 />
               </div>
@@ -76,4 +98,3 @@ export default function Quiz({ moduleIndex }: QuizProps) {
     </div>
   );
 }
-

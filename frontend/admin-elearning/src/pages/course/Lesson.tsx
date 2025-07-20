@@ -17,6 +17,7 @@ import {
   FieldArray,
   FieldValues,
   useFieldArray,
+  UseFieldArrayRemove,
   useFormContext,
   UseFormRegister,
 } from "react-hook-form";
@@ -76,6 +77,7 @@ export default function Lesson({ moduleIndex }: LessonProps) {
               moduleIndex={moduleIndex}
               index={index}
               key={field.id}
+              removeLesson={removeLesson}
             />
             {index === lessonFields.length - 1 && (
               <Card className="min-w-80 min-h-80 flex items-center justify-center ">
@@ -105,10 +107,6 @@ export default function Lesson({ moduleIndex }: LessonProps) {
           </>
         ))}
       </div>
-
-      <Button>
-        <span onClick={() => removeLesson(moduleIndex)}>Remove Lesson</span>
-      </Button>
     </div>
   );
 }
@@ -117,10 +115,12 @@ function LessonItem({
   moduleIndex,
   index,
   register,
+  removeLesson,
 }: {
   moduleIndex: number;
   index: number;
   register: UseFormRegister<FormCourse>;
+  removeLesson: UseFieldArrayRemove;
 }) {
   return (
     <>
@@ -128,7 +128,13 @@ function LessonItem({
         <CardHeader>
           <CardTitle>Card Title</CardTitle>
           <CardDescription>Card Description</CardDescription>
-          <CardAction>Card Action</CardAction>
+          <CardAction>
+            <Button>
+              <span onClick={() => removeLesson(index)}>
+                Remove Lesson
+              </span>
+            </Button>
+          </CardAction>
         </CardHeader>
         <CardContent>
           <div className="grid w-full max-w-sm items-center gap-3">
@@ -150,9 +156,6 @@ function LessonItem({
             />
           </div>
         </CardContent>
-        <CardFooter>
-          <p>Card Footer</p>
-        </CardFooter>
       </Card>
     </>
   );
