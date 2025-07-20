@@ -108,6 +108,7 @@ const QuizOption = forwardRef(function QuizOption({
                   `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${questionIndex}.options.${index}.optionContent`
                 )}
               />
+              <Button onClick={() => removeOption(index)}>Remove</Button>
             </div>
           ))}
         </RadioGroup>
@@ -128,6 +129,7 @@ const QuizOption = forwardRef(function QuizOption({
                 `modules.${moduleIndex}.quizzes.${quizIndex}.questions.${questionIndex}.options.${index}.optionContent`
               )}
             />
+            <Button onClick={() => removeOption(index)}>Remove</Button>
           </div>
         ))
       )}
