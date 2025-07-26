@@ -29,7 +29,7 @@ export default function Student() {
 
   const onEdit = (id: number) => {
     if (!id || !Number(id)) return;
-    navigate(`/student/${id}`);
+    navigate(`/student/edit/${id}`);
   };
 
   const onDeleteConfirm = (id: number, username: string) => {
@@ -46,7 +46,6 @@ export default function Student() {
 
   const onDelete = async (id: number) => {
     try {
-      console.log('Deleting student with ID:', id);
       await deleteStudent(id);
       onCloseDialog();
     } catch (error) {
