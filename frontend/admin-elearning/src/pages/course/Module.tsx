@@ -30,13 +30,13 @@ export default function Module({ id }: ModuleProps) {
           <Input {...register(`modules.${id}.description`)} />
         </div>
       </div>
-      <Tabs defaultValue="lessons" className="w-[400px]">
+      <Tabs defaultValue="lessons">
         <TabsList>
           <TabsTrigger value="lessons">Lessons</TabsTrigger>
           <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
         </TabsList>
         <TabsContent value="lessons">
-          <Lesson moduleIndex={id} />
+          <Lesson moduleIndex={id} />  
         </TabsContent>
         <TabsContent value="quizzes">
           <Quiz moduleIndex={id} />

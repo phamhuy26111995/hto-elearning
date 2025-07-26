@@ -6,9 +6,7 @@ import { devtools } from "zustand/middleware";
 
 interface StudentStore {
   students: User[];
-  studentDetail?: User;
   fetchStudents: () => void;
-  fetchStudentDetail: (id: number) => void;
 }
 
 const useStudentStore = create<StudentStore>()(
@@ -24,13 +22,7 @@ const useStudentStore = create<StudentStore>()(
 
         set({ students : usersWithNo }, undefined, "fetchStudents");
       },
-
-      // API_GET_DETAIL_STUDENT
-      async fetchStudentDetail(id: number) {
-        const { data } = await studentServices.getById(id);
-        const studentDetail = data.user as User;
-        set({ studentDetail }, undefined, "fetchStudentDetail");
-      },
+     
     }),
     { name: "StudentStore" } // shows up as “UserStore” in DevTools
   )

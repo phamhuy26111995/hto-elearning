@@ -3,6 +3,9 @@ export interface Course {
     courseId: number;
     title: string;
     description: string;
+    teacherId? : number
+    createdBy? : number
+    updatedBy? : number
 }
 
 export type Module = {
@@ -41,12 +44,12 @@ export type Quiz ={
 export type QuizQuestion = {
     questionId: number;
     questionContent: string;
-    questionType: string;
+    questionType: "SINGLE" | "MULTIPLE";
     quizId: number;
     orderIndex: number;
     createdAt: string;
     updatedAt: string;
-    options : QuizOption[]
+    options? : QuizOption[]
 }
 
 export type QuizOption = {
@@ -61,5 +64,16 @@ export type QuizOption = {
 
 
 export type FormCourse = {
+    course : Course
     modules : Module[],
+}
+
+export type CreateCourseBody = {
+    module : Module
+    lessons : Lesson[]
+    quizzes : Quiz[]
+}
+
+export type CourseBodies = {
+
 }
