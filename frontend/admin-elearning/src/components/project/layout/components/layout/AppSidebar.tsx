@@ -59,7 +59,7 @@ const data = {
         },
         {
           title: "Tạo mới khóa học",
-          url: ROUTES.COURSE + "/new",
+          url: ROUTES.COURSE + "/add",
         },
       ],
     },
@@ -74,7 +74,7 @@ const data = {
         },
         {
           title: "Tạo mới học sinh",
-          url: ROUTES.STUDENT + "/new",
+          url: ROUTES.STUDENT + "/add",
         },
       ],
     },

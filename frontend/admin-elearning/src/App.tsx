@@ -47,17 +47,32 @@ function App() {
           <Route path="/" element={<Navigate to={ROUTES.COURSE} replace />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
+              {/* ROUTE_HOME */}
               <Route path="/home" element={<Home />} />
-              <Route
-                path={ROUTES.COURSE + "/:courseId"}
-                element={<CourseDetail />}
-              />
+
+              {/* ROUTE_COURSE */}
               <Route path={ROUTES.COURSE} element={<Course />} />
               <Route
-                path={ROUTES.STUDENT + "/:studentId"}
+                path={ROUTES.COURSE + "/add"}
+                element={<CourseDetail />}
+              />
+              <Route
+                path={ROUTES.COURSE + "/edit/:courseId"}
+                element={<CourseDetail />}
+              />
+
+              {/* ROUTE_STUDENT */}
+              <Route path={ROUTES.STUDENT} element={<Student />} />
+              <Route
+                path={ROUTES.STUDENT + "/add"}
                 element={<StudentDetail />}
               />
-              <Route path={ROUTES.STUDENT} element={<Student />} />
+              <Route
+                path={ROUTES.STUDENT + "/edit/:studentId"}
+                element={<StudentDetail />}
+              />
+
+              {/* ROUTE_TESTING */}
               <Route path="/testing" element={<TestingPage />} />
             </Route>
           </Route>

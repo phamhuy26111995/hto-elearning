@@ -7,6 +7,7 @@ import { devtools } from "zustand/middleware";
 interface StudentStore {
   students: User[];
   fetchStudents: () => void;
+  deleteStudent: (id: number) => void;
 }
 
 const useStudentStore = create<StudentStore>()(
@@ -22,6 +23,18 @@ const useStudentStore = create<StudentStore>()(
 
         set({ students : usersWithNo }, undefined, "fetchStudents");
       },
+
+      // API_DELETE_STUDENT
+      async deleteStudent(id: number) {
+        try {
+          await studentServices.deleteStudent(id);
+          set((state) => ({
+            students: state.students.filter((student) => student.userId !== id),
+          }));
+        } catch (error) {
+          console.error("Failed to delete student:", error);
+        }
+      }
      
     }),
     { name: "StudentStore" } // shows up as “UserStore” in DevTools
