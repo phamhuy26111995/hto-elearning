@@ -1,5 +1,4 @@
-// import useUserStore from '@/store/user';
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ColumnDef,
   flexRender,
@@ -16,23 +15,44 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import useStudentStore from '@/store/student';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router';
 import { Pencil, Trash2 } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { useNavigate } from 'react-router';
+import ButtonTooltip from '@/components/project/common/ButtonTooltip';
+import DialogRemove from '@/components/project/common/DialogRemove';
 
 export default function Student() {
-  const { fetchStudents, students } = useStudentStore();
+  const navigate = useNavigate();
+  const { fetchStudents, students, deleteStudent } = useStudentStore();
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUsername, setSelectedUsername] = useState<string>('');
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  const onEdit = (id: number) => {
+    if (!id || !Number(id)) return;
+    navigate(`/student/${id}`);
+  };
+
+  const onDeleteConfirm = (id: number, username: string) => {
+    setSelectedUserId(id);
+    setSelectedUsername(username);
+    setIsDialogOpen(true);
+  };
+
+  const onCloseDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedUserId(null);
+    setSelectedUsername('');
+  };
+
+  const onDelete = async (id: number) => {
+    try {
+      console.log('Deleting student with ID:', id);
+      await deleteStudent(id);
+      onCloseDialog();
+    } catch (error) {
+      console.error('Failed to delete student:', error);
+    }
+  };
 
   const columns: ColumnDef<User>[] = [
     {
@@ -59,44 +79,24 @@ export default function Student() {
       accessorKey: 'Action',
       header: 'Action',
       cell: ({ row }) => {
-        const infoStudent = row.original; // or row.original.id if your object uses 'id'
+        const infoStudent = row.original;
         return (
-          <div>
-            {/* BUTTON_EDIT */}
-            <Button className="text-blue-500 hover:pointer">
-              <Link to={`/student/${infoStudent.userId}`}>
-                <Pencil />
-              </Link>
-            </Button>
+          <div className="flex items-center gap-2">
+            {/* EDIT */}
+            <ButtonTooltip
+              tooltip="Sửa"
+              icon={<Pencil size={16} className="text-blue-500" />}
+              onClick={() => onEdit(infoStudent.userId)}
+            />
 
-            {/* BUTTON_DELETE */}
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="ml-2 text-red-500 hover:pointer">
-                  <Trash2 />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Bạn có chắc muốn xóa học sinh{' '}
-                    <span className="font-bold text-red-500">
-                      {infoStudent.username}
-                    </span>{' '}
-                    này không?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription></AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Không</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => onDelete(infoStudent.userId)}
-                  >
-                    Có
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            {/* DELETE */}
+            <ButtonTooltip
+              tooltip="Xóa"
+              icon={<Trash2 size={16} className="text-red-500" />}
+              onClick={() =>
+                onDeleteConfirm(infoStudent.userId, infoStudent.username)
+              }
+            />
           </div>
         );
       },
@@ -109,71 +109,65 @@ export default function Student() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // Function to handle deletion of a student
-  const onDelete = async (id: number) => {
-    try {
-      console.log('Deleting student with ID:', id);
-    } catch (error) {
-      console.error('Failed to delete student:', error);
-    }
-  };
-
   useEffect(() => {
     fetchStudents();
   }, []);
 
   return (
-    <React.Fragment>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
                       )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && 'selected'}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </React.Fragment>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={columns.length} className="h-24 text-center">
+                Không có kết quả.
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      {/* DIALOG_DELETE */}
+      <DialogRemove
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        username={selectedUsername}
+        onConfirm={() => {
+          if (selectedUserId !== null) {
+            onDelete(selectedUserId);
+          }
+        }}
+        title="Bạn có chắc muốn xóa học sinh này không?"
+      />
+    </div>
   );
 }
