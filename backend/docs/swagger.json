@@ -1,0 +1,186 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is E-learning Api",
+        "title": "E-learning Api",
+        "termsOfService": "none",
+        "contact": {
+            "name": "Huy Pham",
+            "email": "pham.huy.19951126@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/admin/user/create": {
+            "post": {
+                "description": "Create a new user with role TEACHER or STUDENT. Only accessible by ADMIN.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Users"
+                ],
+                "summary": "Create a new user (teacher or student)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "User info to create",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "User created successfully",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input or role",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "get string by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Show an account",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.User"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.UserDTO": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string",
+                    "default": "ACTIVE"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.User": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "teacherId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "updatedBy": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

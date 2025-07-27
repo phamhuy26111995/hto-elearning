@@ -17,6 +17,14 @@ func NewUserController(userService service.UserService) *UserController {
 	return &UserController{userService: userService}
 }
 
+// ShowUsers godoc
+// @Summary      Show an account
+// @Description  get string by ID
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Success      200  {array}  model.User
+// @Router       /users [get]
 func (controller *UserController) GetUsers(context *gin.Context) {
 	users, err := controller.userService.GetAllUsers()
 

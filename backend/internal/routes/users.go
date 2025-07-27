@@ -14,3 +14,13 @@ func RegisterUserController() *controller.UserController {
 
 	return userController
 }
+
+func RegisterAdminUserController() *controller.AdminUserController {
+
+	adminRepo := repository.NewAdminUserRepository()
+	repo := repository.NewUserRepository()
+	userService := service.NewAdminUserService(adminRepo, repo)
+	userController := controller.NewAdminUserController(userService)
+
+	return userController
+}

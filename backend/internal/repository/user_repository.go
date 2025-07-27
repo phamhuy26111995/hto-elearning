@@ -185,15 +185,24 @@ func (u *userRepositoryImpl) GetUserById(userId int64) (*model.User, error) {
 }
 
 func (u *userRepositoryImpl) CreateUser(user *model.User) error {
-	query := `INSERT INTO elearning.users (username,email, password, role, created_by,updated_by) 
-			VALUES ($1, $2, $3, $4, $5, $6)`
-	stmt, err := database.DB.Prepare(query)
+	query := `INSERT INTO elearning.users (username,email, password, role, created_by,updated_by, status) 
+			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING user_id`
+	err := database.DB.QueryRow(
+		query,
+		user.Username,
+		user.Email,
+		user.Password,
+		user.Role,
+		user.CreatedBy,
+		user.UpdatedBy,
+		user.Status,
+	).Scan(&user.UserID)
 
 	if err != nil {
 		return err
 	}
 
-	_, err = stmt.Exec(user.Username, user.Email, user.Password, user.Role, user.CreatedBy, user.UpdatedBy)
+	//_, err = stmt.Exec(user.Username, user.Email, user.Password, user.Role, user.CreatedBy, user.UpdatedBy, user.Status)
 	return err
 }
 

@@ -35,3 +35,13 @@ func AuthorizeTeacher(context *gin.Context) {
 
 	context.Next()
 }
+
+func AuthorizeAdmin(context *gin.Context) {
+	role := context.GetString("role")
+	if role != "ADMIN" {
+		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Not authorized."})
+		return
+	}
+
+	context.Next()
+}

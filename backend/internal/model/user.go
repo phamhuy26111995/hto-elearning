@@ -7,6 +7,7 @@ type User struct {
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
+	Status    string    `json:"status"`
 	Role      string    `json:"role"`
 	UpdatedBy int64     `json:"updatedBy"`
 	CreatedBy int64     `json:"createdBy"`
