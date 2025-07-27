@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/phamhuy26111995/hto-elearning/internal/constant"
 	"github.com/phamhuy26111995/hto-elearning/internal/dto"
+	"github.com/phamhuy26111995/hto-elearning/internal/model"
 	"github.com/phamhuy26111995/hto-elearning/internal/service"
 	"net/http"
 )
@@ -101,4 +102,22 @@ func (controller *AdminUserController) GetAllStudents(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, gin.H{"data": teachers})
+}
+
+func (controller *AdminUserController) UpdateUser(context *gin.Context) {
+	var userEntity model.User
+
+	if err := context.ShouldBindJSON(&userEntity); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := controller.service.UpdateUser(&userEntity)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"Error When Update User": err.Error()})
+	}
+
+	context.JSON(http.StatusOK, gin.H{"Update Successfully": userEntity.UserID})
+
 }

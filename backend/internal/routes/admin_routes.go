@@ -21,4 +21,6 @@ func AdminRoutes(server *gin.Engine) {
 
 	userApiGroup.POST("/create", userController.CreateUser)
 
+	userApiGroup.PUT("/update", userController.UpdateUser)
+
 }

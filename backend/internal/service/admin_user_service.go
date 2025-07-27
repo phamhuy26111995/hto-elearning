@@ -11,6 +11,8 @@ type AdminUserService interface {
 	GetAllByRole(role string, paging dto.Paging) ([]dto.UserDTO, error)
 
 	CreateUser(user *model.User) error
+
+	UpdateUser(user *model.User) error
 }
 
 type AdminUserServiceImpl struct {
@@ -53,4 +55,14 @@ func (service *AdminUserServiceImpl) CreateUser(user *model.User) error {
 	hashPassword, _ := utils.HashPassword(user.Password)
 	user.Password = hashPassword
 	return service.repo.CreateUser(user)
+}
+
+func (service *AdminUserServiceImpl) UpdateUser(user *model.User) error {
+	err := service.repo.UpdateUser(user)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
