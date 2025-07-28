@@ -14,7 +14,7 @@ import {
   flexRender,
   getCoreRowModel,
   Row,
-  RowData,
+  // RowData,
   useReactTable,
 } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
@@ -124,7 +124,7 @@ function ActionCell({ row }: ActionCellProps) {
   const navigate = useNavigate();
 
   function onClickAction() {
-    navigate(`${ROUTES.COURSE}/${row.original.courseId}`);
+    navigate(`${ROUTES.COURSE}/edit/${row.original.courseId}`);
   }
 
   return <button onClick={onClickAction}>
