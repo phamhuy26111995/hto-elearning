@@ -6,6 +6,7 @@ import (
 	"github.com/phamhuy26111995/hto-elearning/internal/dto"
 	"github.com/phamhuy26111995/hto-elearning/internal/service"
 	"net/http"
+	"time"
 )
 
 type AdminUserController struct {
@@ -47,6 +48,7 @@ func (controller *AdminUserController) CreateUser(context *gin.Context) {
 
 	userDto.CreatedBy = userId.(int64)
 	userDto.UpdatedBy = userId.(int64)
+	userDto.ParentID = userId.(int64)
 
 	if userDto.Status == "" {
 		userDto.Status = "ACTIVE"
@@ -101,4 +103,38 @@ func (controller *AdminUserController) GetAllStudents(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, gin.H{"data": teachers})
+}
+
+func (controller *AdminUserController) UpdateUser(context *gin.Context) {
+	userId, exists := context.Get("userId")
+
+	if !exists {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var userDto dto.UserDTO
+
+	if userDto.Role == constant.RoleAdmin {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Role"})
+		return
+	}
+
+	if err := context.ShouldBindJSON(&userDto); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	userEntity := userDto.MappingToUserEntity(false)
+
+	userEntity.UpdatedBy = userId.(int64)
+	userEntity.UpdatedAt = time.Now()
+
+	if updatedErr := controller.service.UpdateUser(userEntity); updatedErr != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": updatedErr.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"data": userEntity.UserID})
+
 }

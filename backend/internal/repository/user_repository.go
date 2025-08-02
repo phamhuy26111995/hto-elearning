@@ -151,6 +151,12 @@ func (u *userRepositoryImpl) UpdateUser(user *model.User) error {
 		placeholderIndex++
 	}
 
+	if user.Status != "" {
+		setParts = append(setParts, fmt.Sprintf("status = $%d", placeholderIndex))
+		args = append(args, user.Status)
+		placeholderIndex++
+	}
+
 	setParts = append(setParts, fmt.Sprintf("updated_by = $%d", placeholderIndex))
 	args = append(args, user.UpdatedBy)
 	placeholderIndex++
@@ -185,8 +191,8 @@ func (u *userRepositoryImpl) GetUserById(userId int64) (*model.User, error) {
 }
 
 func (u *userRepositoryImpl) CreateUser(user *model.User) error {
-	query := `INSERT INTO elearning.users (username,email, password, role, created_by,updated_by, status) 
-			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING user_id`
+	query := `INSERT INTO elearning.users (username,email, password, role, created_by,updated_by, status, parent_id) 
+			VALUES ($1, $2, $3, $4, $5, $6, $7,$8) RETURNING user_id`
 	err := database.DB.QueryRow(
 		query,
 		user.Username,
@@ -196,6 +202,7 @@ func (u *userRepositoryImpl) CreateUser(user *model.User) error {
 		user.CreatedBy,
 		user.UpdatedBy,
 		user.Status,
+		user.ParentID,
 	).Scan(&user.UserID)
 
 	if err != nil {

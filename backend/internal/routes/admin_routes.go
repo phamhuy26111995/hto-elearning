@@ -9,6 +9,10 @@ func AdminRoutes(server *gin.Engine) {
 
 	userController := RegisterAdminUserController()
 
+	courseController := RegisterCourseController()
+
+	//moduleController := RegisterModuleController()
+
 	apiGroup := server.Group("/api/v1/admin")
 
 	apiGroup.Use(middlewares.Authenticate, middlewares.AuthorizeAdmin)
@@ -20,5 +24,15 @@ func AdminRoutes(server *gin.Engine) {
 	userApiGroup.GET("/student", userController.GetAllStudents)
 
 	userApiGroup.POST("/create", userController.CreateUser)
+
+	userApiGroup.PUT("/update", userController.UpdateUser)
+
+	courseApiGroup := apiGroup.Group("/course")
+
+	courseApiGroup.GET("/", userController.GetAllTeachers)
+
+	courseApiGroup.POST("/create", courseController.CreateCourse)
+
+	courseApiGroup.PUT("/update", courseController.UpdateCourse)
 
 }

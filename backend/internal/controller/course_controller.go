@@ -6,6 +6,7 @@ import (
 	"github.com/phamhuy26111995/hto-elearning/internal/service"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type CourseController struct {
@@ -47,13 +48,25 @@ func (c *CourseController) GetCourse(ctx *gin.Context) {
 }
 
 func (c *CourseController) CreateCourse(ctx *gin.Context) {
+	userId, exist := ctx.Get("userId")
+
+	if !exist {
+		ctx.JSON(400, "Error when get context value userId")
+		return
+	}
+
 	var course model.Course
 	err := ctx.ShouldBindJSON(&course)
 	if err != nil {
 		ctx.JSON(400, err)
 		return
 	}
-	err = c.courseService.CreateCourse(&course, course.TeacherId)
+
+	course.CreatedBy = userId.(int64)
+	course.UpdatedBy = userId.(int64)
+	course.UserId = userId.(int64)
+
+	err = c.courseService.CreateCourse(&course, course.UserId)
 	if err != nil {
 		ctx.JSON(500, err)
 		return
@@ -62,12 +75,22 @@ func (c *CourseController) CreateCourse(ctx *gin.Context) {
 }
 
 func (c *CourseController) UpdateCourse(ctx *gin.Context) {
+	userId, exist := ctx.Get("userId")
+
+	if !exist {
+		ctx.JSON(400, "Error when get context value userId")
+		return
+	}
+
 	var course model.Course
 	err := ctx.ShouldBindJSON(&course)
 	if err != nil {
 		ctx.JSON(400, err)
 		return
 	}
+
+	course.UpdatedBy = userId.(int64)
+	course.UpdatedAt = time.Now()
 
 	err = c.courseService.UpdateCourse(&course)
 	if err != nil {

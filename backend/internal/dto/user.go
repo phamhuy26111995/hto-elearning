@@ -16,6 +16,7 @@ type UserDTO struct {
 	CreatedBy int64     `json:"createdBy"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
+	ParentID  int64     `json:"parentID"`
 }
 
 func (userDto UserDTO) MappingToUserEntity(isCreate bool) *model.User {
@@ -34,6 +35,7 @@ func (userDto UserDTO) MappingToUserEntity(isCreate bool) *model.User {
 	if isCreate {
 		user.CreatedAt = time.Now()
 		user.CreatedBy = userDto.CreatedBy
+		user.ParentID = userDto.ParentID
 	}
 
 	return &user

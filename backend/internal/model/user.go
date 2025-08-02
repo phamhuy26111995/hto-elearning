@@ -13,5 +13,5 @@ type User struct {
 	CreatedBy int64     `json:"createdBy"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
-	TeacherID int64     `json:"teacherId"`
+	ParentID  int64     `json:"parentID"`
 }

@@ -5,7 +5,7 @@ import "time"
 type Course struct {
 	CourseId    int64     `json:"courseId"`
 	Title       string    `json:"title"`
-	TeacherId   int64     `json:"teacherId" binding:"required"`
+	UserId      int64     `json:"userId"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
