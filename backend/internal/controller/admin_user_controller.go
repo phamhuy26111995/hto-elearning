@@ -1,12 +1,13 @@
 package controller
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/phamhuy26111995/hto-elearning/internal/constant"
 	"github.com/phamhuy26111995/hto-elearning/internal/dto"
 	"github.com/phamhuy26111995/hto-elearning/internal/service"
-	"net/http"
-	"time"
 )
 
 type AdminUserController struct {

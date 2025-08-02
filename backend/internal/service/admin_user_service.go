@@ -13,6 +13,8 @@ type AdminUserService interface {
 	CreateUser(user *model.User) error
 
 	UpdateUser(user *model.User) error
+
+	UpdateUser(user *model.User) error
 }
 
 type AdminUserServiceImpl struct {
