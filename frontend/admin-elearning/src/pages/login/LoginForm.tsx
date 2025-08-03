@@ -3,8 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ENDPOINT, ROUTES } from "@/consts/const";
 import { cn } from "@/lib/utils";
+
 import useUserStore from "@/store/user";
+import { UserInfo } from "@/types/user";
+import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -28,10 +32,12 @@ export function LoginForm({
 
   const navigate = useNavigate();
   const { setCurrentUserLogin, currentUserLogin } = useUserStore();
+  
+
 
   useEffect(() => {
     if (currentUserLogin) {
-      navigate("/course");
+      navigate("/testing");
     }
   }, [currentUserLogin]);
 
@@ -41,19 +47,21 @@ export function LoginForm({
         username: data.username,
         password: data.password,
       };
-      const response = await apiService.post("/login", requestBody);
+      const response: AxiosResponse<{ token: string; userInfo: UserInfo }> =
+        await apiService.post("/login", requestBody);
 
-      const { token, userInfo }: any = response.data;
+      const { token, userInfo } = response.data;
 
       if (!token) {
         return;
       }
 
+
       localStorage.setItem("token", token);
 
       setCurrentUserLogin(userInfo);
 
-      navigate("/courses");
+      navigate("/testing");
     } catch (error) {
       toast.error("Username hoặc password không chính xác");
     }

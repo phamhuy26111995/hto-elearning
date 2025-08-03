@@ -1,13 +1,31 @@
 import axiosClient from "@/api/axiosClient";
-import { TEACHER_ENDPOINT } from "@/consts/const";
-
-const ENDPOINT = `/${TEACHER_ENDPOINT}/users`;
+import { ENDPOINT } from "@/consts/const";
+import { Paging, User } from "@/types/user";
 
 const userServices = {
-  getCurrentUserLogin: async () => {
-    return await axiosClient.get(`${ENDPOINT}/current-user`);
+  getAllTeacher: async (paging: Paging) => {
+    return await axiosClient.get(`${ENDPOINT}/user/teacher`, {
+      params: paging,
+    });
   },
 
+  getAllStudent: async (paging: Paging) => {
+    return await axiosClient.get(`${ENDPOINT}/user/student`, {
+      params: paging,
+    });
+  },
+
+  getById: async (id: number) => {
+    return await axiosClient.get(`${ENDPOINT}/user/${id}`);
+  },
+
+  createUser: async (data: User) => {
+    return await axiosClient.post(`${ENDPOINT}/user/create`, data);
+  },
+
+  updateUser: async (data: User) => {
+    return await axiosClient.put(`${ENDPOINT}/user/update`, data);
+  },
 };
 
 export default userServices;

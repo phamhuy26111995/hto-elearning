@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/phamhuy26111995/hto-elearning/internal/constant"
 	"github.com/phamhuy26111995/hto-elearning/internal/model"
 	"github.com/phamhuy26111995/hto-elearning/internal/service"
 	"net/http"
@@ -15,6 +16,27 @@ type CourseController struct {
 
 func NewCourseController(courseService service.CourseService) CourseController {
 	return CourseController{courseService: courseService}
+}
+
+func (c *CourseController) GetAll(ctx *gin.Context) {
+	raw, exists := ctx.Get("role")
+
+	if !exists {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "role not exist"})
+	}
+
+	role := raw.(string)
+
+	if role != constant.RoleAdmin {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "invalid role"})
+	}
+
+	courses, err := c.courseService.GetAll()
+	if err != nil {
+		ctx.JSON(500, err)
+		return
+	}
+	ctx.JSON(200, courses)
 }
 
 func (c *CourseController) GetAllCourses(ctx *gin.Context) {

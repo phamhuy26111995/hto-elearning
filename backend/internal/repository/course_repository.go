@@ -8,6 +8,8 @@ import (
 )
 
 type CourseRepository interface {
+	GetAll() ([]model.Course, error)
+
 	GetAllCoursesByUserId(userId int64) ([]model.Course, error)
 
 	CreateCourse(course *model.Course, userId int64) error
@@ -55,9 +57,35 @@ func NewCourseRepository() CourseRepository {
 	return &courseRepositoryImpl{}
 }
 
+func (c *courseRepositoryImpl) GetAll() ([]model.Course, error) {
+	query := `SELECT 
+		c.course_id , c.title , c.description , u.username
+	FROM elearning.courses c JOIN elearning.users u ON c.user_id = u.user_id`
+	rows, err := database.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var courses []model.Course
+	for rows.Next() {
+		var course model.Course
+		err := rows.Scan(&course.CourseId, &course.Title, &course.Description, &course.Username)
+		if err != nil {
+			return nil, err
+		}
+		courses = append(courses, course)
+	}
+
+	return courses, nil
+
+}
+
 func (c *courseRepositoryImpl) GetAllCoursesByUserId(userId int64) ([]model.Course, error) {
 	query := `
-	SELECT course_id, title, description FROM elearning.courses WHERE user_id = $1
+	SELECT course_id, title, description, u.username  FROM elearning.courses 
+	c INNER JOIN elearning.users u ON e.user_id = u.user_id                                    
+	                                     WHERE e.user_id = $1
 `
 	rows, err := database.DB.Query(query, userId)
 	if err != nil {

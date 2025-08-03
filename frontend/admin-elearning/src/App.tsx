@@ -5,7 +5,7 @@ import Layout from "./components/project/layout/Layout";
 import Home from "./pages/Home";
 
 import CourseDetail from "./pages/course/CourseDetail";
-import Student from "./pages/student/Student";
+import Users from "./pages/user/Users";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import Login from "./pages/login/Login";
 import NotFound from "./pages/NotFound";
@@ -13,8 +13,8 @@ import Course from "./pages/course/Course";
 import TestingPage from "./pages/testing/TestingPage";
 import useUserStore from "./store/user";
 import { apiService } from "./api/apiService";
-import StudentDetail from "./pages/student/StudentDetail";
-import userServices from "./services/user";
+import UserDetail from "./pages/user/UserDetail";
+import loginUserServices from "./services/loginUser";
 import { ROUTES } from "./consts/const";
 
 function App() {
@@ -31,7 +31,7 @@ function App() {
     }
 
     try {
-      const response = await userServices.getCurrentUserLogin();
+      const response = await loginUserServices.getCurrentUserLogin();
       const { data }: any = response;
       setCurrentUserLogin(data.userInfo);
     } catch (error) {
@@ -52,24 +52,21 @@ function App() {
 
               {/* ROUTE_COURSE */}
               <Route path={ROUTES.COURSE} element={<Course />} />
-              <Route
-                path={ROUTES.COURSE + "/add"}
-                element={<CourseDetail />}
-              />
+              <Route path={ROUTES.COURSE + "/add"} element={<CourseDetail />} />
               <Route
                 path={ROUTES.COURSE + "/edit/:courseId"}
                 element={<CourseDetail />}
               />
 
               {/* ROUTE_STUDENT */}
-              <Route path={ROUTES.STUDENT} element={<Student />} />
+              <Route path={ROUTES.USER} element={<Users />} />
               <Route
-                path={ROUTES.STUDENT + "/add"}
-                element={<StudentDetail />}
+                path={ROUTES.USER + "/add"}
+                element={<UserDetail />}
               />
               <Route
-                path={ROUTES.STUDENT + "/edit/:studentId"}
-                element={<StudentDetail />}
+                path={ROUTES.USER + "/edit/:studentId"}
+                element={<UserDetail />}
               />
 
               {/* ROUTE_TESTING */}

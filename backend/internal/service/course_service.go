@@ -6,6 +6,7 @@ import (
 )
 
 type CourseService interface {
+	GetAll() ([]model.Course, error)
 	GetAllCourses(userId int64) ([]model.Course, error)
 	GetCourse(id int64) (*model.Course, error)
 	CreateCourse(course *model.Course, userId int64) error
@@ -19,6 +20,11 @@ type courseServiceImpl struct {
 
 func NewCourseService(repo repository.CourseRepository) CourseService {
 	return &courseServiceImpl{repo: repo}
+}
+
+func (service *courseServiceImpl) GetAll() ([]model.Course, error) {
+
+	return service.repo.GetAll()
 }
 
 func (service *courseServiceImpl) GetAllCourses(userId int64) ([]model.Course, error) {

@@ -29,7 +29,7 @@ func TeacherRoutes(server *gin.Engine) {
 	authenticated.DELETE("/users/unenrollment", userController.UnEnrollCourseForStudent)
 	authenticated.DELETE("/users/:id", userController.DeleteUser)
 	authenticated.POST("/users/change-status", userController.ChangeStatus)
-	authenticated.GET("/users/current-user", userController.GetCurrentUserLogin)
+	//authenticated.GET("/users/current-user", userController.GetCurrentUserLogin)
 	authenticated.GET("/users/:id", userController.GetUserById)
 
 	authenticated.GET("/course/get-all", courseController.GetAllCourses)

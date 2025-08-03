@@ -1,6 +1,4 @@
 // src/stores/userStore.ts
-import studentServices from "@/services/student";
-import { User } from "@/types/user";
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 

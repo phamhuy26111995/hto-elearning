@@ -52,9 +52,9 @@ export default function Course() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  useEffect(() => {
-    fetchCourse();
-  }, []);
+  // useEffect(() => {
+  //   fetchCourse();
+  // }, []);
 
   async function fetchCourse() {
     const response = await courseServices.getAll();

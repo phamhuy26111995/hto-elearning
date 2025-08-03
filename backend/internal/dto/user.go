@@ -17,6 +17,7 @@ type UserDTO struct {
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	ParentID  int64     `json:"parentID"`
+	TotalRows int64     `json:"totalRows"`
 }
 
 func (userDto UserDTO) MappingToUserEntity(isCreate bool) *model.User {

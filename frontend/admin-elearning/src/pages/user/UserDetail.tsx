@@ -1,49 +1,49 @@
-import ErrorMessage from '@/components/project/common/ErrorMessage';
-import { RequiredLabel } from '@/components/project/common/RequiredLabel';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import ErrorMessage from "@/components/project/common/ErrorMessage";
+import { RequiredLabel } from "@/components/project/common/RequiredLabel";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { DEFAULT_TIMEOUT, ROLES } from '@/consts/const';
-import studentServices from '@/services/student';
-import { User } from '@/types/user';
-import React, { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { useParams, useLocation, useNavigate } from 'react-router';
-import { toast } from 'sonner';
-import { Toaster } from '@/components/ui/sonner'
+} from "@/components/ui/select";
+import { DEFAULT_TIMEOUT, ROLES, ROUTES } from "@/consts/const";
+import userServices from "@/services/user";
+import { User } from "@/types/user";
+import React, { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useParams, useLocation, useNavigate } from "react-router";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 
-export default function StudentDetail() {
+export default function UserDetail() {
   const location = useLocation();
   const navigate = useNavigate();
   const { studentId: id } = useParams<{ studentId: string }>();
-  const isAddMode = location.pathname.includes('/add');
-  const isEditMode = location.pathname.includes('/edit');
+  const isAddMode = location.pathname.includes("/add");
+  const isEditMode = location.pathname.includes("/edit");
   const listRoles = ROLES;
 
   const pageTitle = isAddMode
-    ? 'Thêm mới học viên'
+    ? "Thêm mới học viên"
     : isEditMode
-    ? 'Cập nhật học viên'
-    : 'Chi tiết học viên';
+    ? "Cập nhật học viên"
+    : "Chi tiết học viên";
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isDirty },
     control,
     handleSubmit,
     reset,
   } = useForm<User>({
     defaultValues: {
-      role: 'STUDENT',
-      username: '',
-      password: '',
-      email: '',
+      role: "STUDENT",
+      username: "",
+      password: "",
+      email: "",
     },
   });
 
@@ -56,7 +56,7 @@ export default function StudentDetail() {
   }, [id]);
 
   async function getData() {
-    const response = await studentServices.getById(Number(id));
+    const response = await userServices.getById(Number(id));
 
     const data = response.data;
 
@@ -67,28 +67,28 @@ export default function StudentDetail() {
 
   const onGoBack = () => {
     reset();
-    navigate(`/student`);
-  }
+    navigate(ROUTES.USER);
+  };
 
   const onSubmit = async (data: User) => {
     try {
       if (isAddMode) {
-        await studentServices.createStudent(data);
-        toast.success('Thêm mới học viên thành công');
+        await userServices.createUser(data);
+        toast.success("Thêm mới học viên thành công");
       } else if (isEditMode) {
         data.userId = Number(id);
-        await studentServices.updateStudent(data);
-        toast.success('Cập nhật học viên thành công');
+        await userServices.updateUser(data);
+        toast.success("Cập nhật học viên thành công");
       }
 
       setTimeout(() => {
-        navigate(`/student`);
+        navigate(ROUTES.USER);
       }, DEFAULT_TIMEOUT);
     } catch (error) {
-      console.error('Error saving student:', error);
-      toast.error('Có lỗi xảy ra khi lưu học viên');
+      console.error("Error saving student:", error);
+      toast.error("Có lỗi xảy ra khi lưu học viên");
     }
-  }
+  };
 
   return (
     <React.Fragment>
@@ -101,8 +101,8 @@ export default function StudentDetail() {
           <div>
             <RequiredLabel htmlFor="username">Tên đăng nhập</RequiredLabel>
             <Input
-              {...register('username', {
-                required: 'Vui lòng nhập tên đăng nhập',
+              {...register("username", {
+                required: "Vui lòng nhập tên đăng nhập",
               })}
               aria-invalid={!!errors.username}
               placeholder="Nhập tên đăng nhập"
@@ -115,9 +115,14 @@ export default function StudentDetail() {
             <RequiredLabel htmlFor="password">Mật khẩu</RequiredLabel>
             <Input
               type="password"
-              {...register('password', {
-                required: 'Vui lòng nhập mật khẩu',
-              })}
+              {...register(
+                "password",
+                isAddMode
+                  ? {
+                      required: "Vui lòng nhập mật khẩu",
+                    }
+                  : {}
+              )}
               aria-invalid={!!errors.password}
               placeholder="Nhập mật khẩu"
             />
@@ -128,11 +133,11 @@ export default function StudentDetail() {
           <div>
             <RequiredLabel htmlFor="email">Email</RequiredLabel>
             <Input
-              {...register('email', {
-                required: 'Vui lòng nhập email',
+              {...register("email", {
+                required: "Vui lòng nhập email",
                 pattern: {
                   value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Email không hợp lệ',
+                  message: "Email không hợp lệ",
                 },
               })}
               aria-invalid={!!errors.email}
@@ -147,9 +152,13 @@ export default function StudentDetail() {
             <Controller
               name="role"
               control={control}
-              rules={{ required: 'Vui lòng chọn quyền' }}
+              rules={{ required: "Vui lòng chọn quyền" }}
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  disabled={isEditMode}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger
                     aria-invalid={!!errors.role}
                     className="w-full"
@@ -170,10 +179,20 @@ export default function StudentDetail() {
           </div>
 
           <div className="col-span-2 flex justify-end gap-2">
-            <Button variant="outline" className='hover:cursor-pointer' onClick={() => onGoBack()}>
+            <Button
+              variant="outline"
+              className="hover:cursor-pointer"
+              onClick={() => onGoBack()}
+            >
               Hủy
             </Button>
-            <Button className='hover:cursor-pointer' onClick={handleSubmit(onSubmit)}>Lưu</Button>
+            <Button
+              disabled={!isDirty}
+              className="hover:cursor-pointer"
+              onClick={handleSubmit(onSubmit)}
+            >
+              Lưu
+            </Button>
           </div>
         </div>
       </div>

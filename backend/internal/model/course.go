@@ -5,6 +5,7 @@ import "time"
 type Course struct {
 	CourseId    int64     `json:"courseId"`
 	Title       string    `json:"title"`
+	Username    string    `json:"username"`
 	UserId      int64     `json:"userId"`
 	Description string    `json:"description"`
 	CreatedAt   time.Time `json:"createdAt"`

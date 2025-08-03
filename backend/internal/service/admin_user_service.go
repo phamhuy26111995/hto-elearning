@@ -13,8 +13,6 @@ type AdminUserService interface {
 	CreateUser(user *model.User) error
 
 	UpdateUser(user *model.User) error
-
-	UpdateUser(user *model.User) error
 }
 
 type AdminUserServiceImpl struct {
@@ -28,7 +26,7 @@ func NewAdminUserService(adminRepo repository.AdminUserRepo, repo repository.Use
 }
 
 func (service *AdminUserServiceImpl) GetAllByRole(role string, paging dto.Paging) ([]dto.UserDTO, error) {
-	userEntities, err := service.adminRepo.GetAllByRole(role, paging)
+	userEntities, err, totalRows := service.adminRepo.GetAllByRole(role, paging)
 
 	if err != nil {
 		return []dto.UserDTO{}, err
@@ -46,6 +44,7 @@ func (service *AdminUserServiceImpl) GetAllByRole(role string, paging dto.Paging
 			CreatedBy: entity.CreatedBy,
 			UpdatedAt: entity.UpdatedAt,
 			UpdatedBy: entity.UpdatedBy,
+			TotalRows: totalRows,
 		}
 	}
 

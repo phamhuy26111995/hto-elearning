@@ -85,7 +85,7 @@ func (controller *AdminUserController) GetAllTeachers(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"data": teachers})
+	context.JSON(http.StatusOK, teachers)
 }
 
 func (controller *AdminUserController) GetAllStudents(context *gin.Context) {
@@ -96,14 +96,14 @@ func (controller *AdminUserController) GetAllStudents(context *gin.Context) {
 		return
 	}
 
-	teachers, err := controller.service.GetAllByRole(constant.RoleStudent, paging)
+	students, err := controller.service.GetAllByRole(constant.RoleStudent, paging)
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	context.JSON(http.StatusOK, gin.H{"data": teachers})
+	context.JSON(http.StatusOK, students)
 }
 
 func (controller *AdminUserController) UpdateUser(context *gin.Context) {

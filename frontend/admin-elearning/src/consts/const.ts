@@ -1,10 +1,15 @@
-export const TEACHER_ENDPOINT = `${import.meta.env.VITE_TEACHER_ENDPOINT}`;
+
+export const ENDPOINT = `${import.meta.env.VITE_ENDPOINT}`
+export const COMMON_ENDPOINT = "api/v1/common" as const
+
+
+
 export const API_URL = `${import.meta.env.VITE_API_URL}`;
 export const DEFAULT_TIMEOUT = 2000; // Default timeout for API requests in milliseconds
 export const ROUTES = {
     LOGIN: "/login",
     COURSE: "/course",
-    STUDENT : "/student",
+    USER : "/user",
 }
 
 export const ROLES = [
@@ -15,9 +20,5 @@ export const ROLES = [
     {
         name: 'Giáo viên',
         value: 'TEACHER'
-    },
-    {
-        name: 'Quản lý',
-        value: 'ADMIN'
     }
 ]

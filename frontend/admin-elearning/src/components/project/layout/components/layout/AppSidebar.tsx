@@ -70,11 +70,11 @@ const data = {
       items: [
         {
           title: "Xem danh sách học sinh",
-          url: ROUTES.STUDENT,
+          url: ROUTES.USER,
         },
         {
           title: "Tạo mới học sinh",
-          url: ROUTES.STUDENT + "/add",
+          url: ROUTES.USER + "/add",
         },
       ],
     },

@@ -92,7 +92,12 @@ func (controller *UserController) CreateStudent(context *gin.Context) {
 }
 
 func (controller *UserController) GetCurrentUserLogin(context *gin.Context) {
-	userIdFromContext, _ := context.Get("userId")
+	userIdFromContext, exists := context.Get("userId")
+
+	if !exists {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
 
 	userId := userIdFromContext.(int64)
 

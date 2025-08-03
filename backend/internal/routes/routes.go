@@ -23,11 +23,15 @@ func RegisterRoutes() *gin.Engine {
 
 	userController := RegisterUserController()
 
+	CommonRoutes(server)
+
 	TeacherRoutes(server)
 
 	AdminRoutes(server)
 
 	server.POST("/login", userController.Login)
+
+	//server.GET("/api/v1/common/current-user", userController.GetCurrentUserLogin)
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
