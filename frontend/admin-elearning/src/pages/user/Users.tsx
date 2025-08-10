@@ -1,4 +1,5 @@
 import ButtonTooltip from "@/components/project/common/ButtonTooltip";
+import { DataTableSkeleton } from "@/components/project/common/DataTableSkeleton";
 import DialogRemove from "@/components/project/common/DialogRemove";
 import Paging from "@/components/project/common/Paging";
 import {
@@ -12,6 +13,7 @@ import {
 import { ROUTES } from "@/consts/const";
 import userServices from "@/services/user";
 import { User } from "@/types/user";
+import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
   flexRender,
@@ -19,20 +21,23 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Pencil, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 
 export default function Users() {
   const navigate = useNavigate();
-  const [dataList, setDataList] = useState<User[]>([]);
-  const [totalRows, setTotalRows] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [rowsPerPage, setRowsPerPage] = useState<number>(25);
+  const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedUsername, setSelectedUsername] = useState<string>("");
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  // const totalPage = Math.ceil(totalRows / rowsPerPage);
+  const { data, isPending } = useQuery<User[]>({
+    queryKey: ["users", { pageNumber, rowsPerPage }],
+    queryFn: () => fetchUsers(pageNumber, rowsPerPage),
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 3,
+  });
 
   const onEdit = (id: number) => {
     if (!id || !Number(id)) return;
@@ -53,8 +58,16 @@ export default function Users() {
 
   function onChangePage(page: number) {
     setPageNumber(page);
-    fetchUsers(page);
   }
+
+  const dataList = useMemo(
+    () =>
+      (data ?? []).map((item, idx) => ({
+        ...item,
+        numberNo: (pageNumber - 1) * rowsPerPage + idx + 1,
+      })),
+    [data, pageNumber, rowsPerPage]
+  );
 
   const onDelete = async (id: number) => {
     try {
@@ -119,99 +132,100 @@ export default function Users() {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  async function fetchUsers(pageNumber : number) {
+  async function fetchUsers(pageNumber: number, rowsPerPage: number) {
     const response = await userServices.getAllStudent({
       pageNumber: pageNumber,
       rowsPerPage: rowsPerPage,
     });
     const data = response.data as User[];
 
-    setDataList(
-      data.map((item, index) => ({
-        ...item,
-        numberNo: (pageNumber - 1) * rowsPerPage + 1 + index,
-      }))
-    );
-    if (data.length > 0) {
-      setTotalRows(data[0].totalRows);
-    }
+    const result = data.map((item, index) => ({
+      ...item,
+      numberNo: (pageNumber - 1) * rowsPerPage + 1 + index,
+    }));
+
+    return result;
   }
 
-  useEffect(() => {
-    fetchUsers(pageNumber);
-  }, []);
+  const totalRows = useMemo(() => data?.[0]?.totalRows ?? 0, [data]);
 
   return (
     <>
-      <div className="rounded-md border p-4">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
+      {isPending ? (
+        <DataTableSkeleton />
+      ) : (
+        <>
+          <div className="rounded-md border p-4">
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
                 ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      Không có kết quả.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Không có kết quả.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
 
-        {/* DIALOG_DELETE */}
-        <DialogRemove
-          open={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          username={selectedUsername}
-          onConfirm={() => {
-            if (selectedUserId !== null) {
-              onDelete(selectedUserId);
-            }
-          }}
-          title="Bạn có chắc muốn xóa học sinh này không?"
-        />
-      </div>
-      <div className="mt-4">
-        <Paging
-          totalRows={totalRows}
-          rowsPerPage={rowsPerPage}
-          currentPage={pageNumber}
-          onChange={onChangePage} // TODO;
-        />
-      </div>
+            {/* DIALOG_DELETE */}
+            <DialogRemove
+              open={isDialogOpen}
+              onOpenChange={setIsDialogOpen}
+              username={selectedUsername}
+              onConfirm={() => {
+                if (selectedUserId !== null) {
+                  onDelete(selectedUserId);
+                }
+              }}
+              title="Bạn có chắc muốn xóa học sinh này không?"
+            />
+          </div>
+          <div className="mt-4">
+            <Paging
+              totalRows={totalRows}
+              rowsPerPage={rowsPerPage}
+              currentPage={pageNumber}
+              onChange={onChangePage} // TODO;
+            />
+          </div>
+        </>
+      )}
     </>
   );
 }

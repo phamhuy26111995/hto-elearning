@@ -17,9 +17,13 @@ import { Controller, useForm } from "react-hook-form";
 import { useParams, useLocation, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function UserDetail() {
   const location = useLocation();
+  const mutation = useMutation({
+    mutationFn: (data: User) => userServices.createUser(data),
+  })
   const navigate = useNavigate();
   const { studentId: id } = useParams<{ studentId: string }>();
   const isAddMode = location.pathname.includes("/add");
@@ -73,7 +77,7 @@ export default function UserDetail() {
   const onSubmit = async (data: User) => {
     try {
       if (isAddMode) {
-        await userServices.createUser(data);
+        await mutation.mutateAsync(data);
         toast.success("Thêm mới học viên thành công");
       } else if (isEditMode) {
         data.userId = Number(id);
