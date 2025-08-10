@@ -13,15 +13,13 @@ func AdminRoutes(server *gin.Engine) {
 
 	courseController := RegisterCourseController()
 
-	//moduleController := RegisterModuleController()
+	moduleController := RegisterModuleController()
 
 	apiGroup := server.Group("/api/v1/admin")
 
 	apiGroup.Use(middlewares.Authenticate, middlewares.AuthorizeAdmin)
 
 	userApiGroup := apiGroup.Group("/user")
-
-	//userApiGroup.GET("/current-user", userController.GetCurrentUserLogin)
 
 	userApiGroup.GET("/teacher", adminUserController.GetAllTeachers)
 
@@ -30,6 +28,7 @@ func AdminRoutes(server *gin.Engine) {
 	userApiGroup.GET("/:id", userController.GetUserById)
 
 	userApiGroup.POST("/create", adminUserController.CreateUser)
+	userApiGroup.POST("/creates", adminUserController.CreateUsers)
 
 	userApiGroup.PUT("/update", adminUserController.UpdateUser)
 
@@ -40,5 +39,9 @@ func AdminRoutes(server *gin.Engine) {
 	courseApiGroup.POST("/create", courseController.CreateCourse)
 
 	courseApiGroup.PUT("/update", courseController.UpdateCourse)
+
+	moduleApiGroup := apiGroup.Group("/module")
+
+	moduleApiGroup.GET("/:courseId", moduleController.GetAllModulesByCourse)
 
 }

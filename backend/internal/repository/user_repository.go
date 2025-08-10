@@ -191,6 +191,12 @@ func (u *userRepositoryImpl) GetUserById(userId int64) (*model.User, error) {
 }
 
 func (u *userRepositoryImpl) CreateUser(user *model.User) error {
+	tx, txerr := database.DB.Begin()
+	if txerr != nil {
+		return txerr
+	}
+	defer tx.Rollback()
+
 	query := `INSERT INTO elearning.users (username,email, password, role, created_by,updated_by, status, parent_id) 
 			VALUES ($1, $2, $3, $4, $5, $6, $7,$8) RETURNING user_id`
 	err := database.DB.QueryRow(
@@ -208,6 +214,7 @@ func (u *userRepositoryImpl) CreateUser(user *model.User) error {
 	if err != nil {
 		return err
 	}
+	tx.Commit()
 
 	//_, err = stmt.Exec(user.Username, user.Email, user.Password, user.Role, user.CreatedBy, user.UpdatedBy, user.Status)
 	return err

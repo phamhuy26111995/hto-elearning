@@ -132,7 +132,7 @@ func (m *moduleRepositoryImpl) GetAllModulesByCourse(courseId int64) ([]*model.M
 	var modules []*model.Module
 	for rows.Next() {
 		var module model.Module
-		err := rows.Scan(&module.CourseId, &module.Title, &module.Description)
+		err := rows.Scan(&module.ModuleId, &module.Title, &module.Description, &module.OrderIndex)
 		if err != nil {
 			return nil, err
 		}

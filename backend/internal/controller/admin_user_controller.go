@@ -1,7 +1,10 @@
 package controller
 
 import (
+	"fmt"
+	"github.com/phamhuy26111995/hto-elearning/internal/model"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -69,6 +72,93 @@ func (controller *AdminUserController) CreateUser(context *gin.Context) {
 
 	context.JSON(http.StatusCreated, gin.H{"User created successfully": userEntity.UserID})
 
+}
+
+func (controller *AdminUserController) CreateUsers(context *gin.Context) {
+	userId, exists := context.Get("userId")
+	if !exists {
+		context.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var userDtos []dto.UserDTO
+	if err := context.ShouldBindJSON(&userDtos); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input: " + err.Error()})
+		return
+	}
+
+	// Kênh để thu thập lỗi và kết quả
+	errChan := make(chan error, len(userDtos))
+	resultChan := make(chan int64, len(userDtos))
+	var wg sync.WaitGroup
+
+	// Giới hạn số lượng goroutines đồng thời
+	maxWorkers := 2
+	semaphore := make(chan struct{}, maxWorkers)
+
+	// Kiểm tra và xử lý từng UserDTO
+	for i, userDto := range userDtos {
+		// Kiểm tra hợp lệ
+		if userDto.Role != constant.RoleTeacher && userDto.Role != constant.RoleStudent {
+			errChan <- fmt.Errorf("user at index %d: invalid role", i)
+			continue
+		}
+
+		if userDto.Status == "" {
+			userDto.Status = "ACTIVE"
+		}
+
+		userDto.CreatedBy = userId.(int64)
+		userDto.UpdatedBy = userId.(int64)
+		userDto.ParentID = userId.(int64)
+
+		userEntity := userDto.MappingToUserEntity(true)
+
+		// Tạo goroutine để lưu user
+		wg.Add(1)
+		semaphore <- struct{}{}
+		go func(index int, entity *model.User) {
+			defer wg.Done()
+			defer func() { <-semaphore }()
+
+			if err := controller.service.CreateUser(entity); err != nil {
+				errChan <- fmt.Errorf("user at index %d: %v", index, err)
+				return
+			}
+			resultChan <- entity.UserID
+		}(i, userEntity)
+	}
+
+	// Đợi tất cả goroutines hoàn thành
+	wg.Wait()
+	close(errChan)
+	close(resultChan)
+
+	// Thu thập lỗi
+	var errors []string
+	for err := range errChan {
+		errors = append(errors, err.Error())
+	}
+
+	// Thu thập ID của users đã tạo
+	var createdUserIDs []int64
+	for id := range resultChan {
+		createdUserIDs = append(createdUserIDs, id)
+	}
+
+	// Trả về response
+	if len(errors) > 0 {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"errors":           errors,
+			"created_user_ids": createdUserIDs,
+		})
+		return
+	}
+
+	context.JSON(http.StatusCreated, gin.H{
+		"message":          "Users created successfully",
+		"created_user_ids": createdUserIDs,
+	})
 }
 
 func (controller *AdminUserController) GetAllTeachers(context *gin.Context) {
